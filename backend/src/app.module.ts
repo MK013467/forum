@@ -5,11 +5,12 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuthModule } from './auth/AuthModule';
 import { PostModule } from './post/post.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [UsersModule, PrismaModule, AuthModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'client', 'dist'),
-  }), PostModule],
+  }), PostModule, S3Module],
   controllers: [],
   providers: [],
 })

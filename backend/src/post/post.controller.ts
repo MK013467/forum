@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
 import { Postdto } from './dto/Post.dto';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { GetPostDto } from './dto/GetPost.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
 export class PostController {
@@ -34,9 +35,16 @@ export class PostController {
 
     @UseGuards(AuthenticatedGuard)
     @Patch(":id")
-    async updatePost( @Param('id') id,  @Body() updatepostdto:UpdatePostDto, @Req() req ){
+    async updatePost( @Param('id' , ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req ){
         const post = await this.postService.updatePost(+id, updatepostdto, req.user.userId);{
             return post;
         }
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @UseInterceptors(FileInterceptor('file '))
+    @Post("/:id/upload-file")
+    async uploadImageToPost ( @UploadedFile() file:Express.Multer.File , @Param('id', ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req): Promise<void>{
+
     }
 }

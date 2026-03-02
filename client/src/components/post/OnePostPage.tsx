@@ -15,11 +15,11 @@ interface Post {
 
 const OnePostPage = () => {
 
-  const postId = useParams();
+  const {postId = ""} = useParams();
   const [post, setPost ]= useState<Post|null>();
 
   useEffect(()=>{
-    const fetchData = async(id:string|undefined) => {
+    const fetchData = async(id:string) => {
       if(!id) {
         setPost(null);
         return;
@@ -28,7 +28,7 @@ const OnePostPage = () => {
       setPost(res.data);
     }
     if(postId){
-      fetchData(postId.id)
+      fetchData(postId)
     }
   }, [])
 
