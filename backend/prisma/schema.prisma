@@ -19,7 +19,8 @@ model User{
   email String @unique
   password String
   displayName String? @default("")
-  Post Post[]
+  posts Post[]
+  comments Comment[]
 }
 
 model UserSetting{
@@ -28,6 +29,17 @@ model UserSetting{
   snsEnabled Boolean
 }
 
+
+model Comment{
+  id Int @default(autoincrement()) @id
+  author User @relation(fields: [authorId] , references: [id])
+  authorId Int 
+  post Post @relation(fields: [postId] , references: [id] )
+  postId Int  
+
+}
+
+
 model Post{
   id Int @default(autoincrement()) @id
   title String
@@ -35,9 +47,8 @@ model Post{
   createdAt DateTime @default(now()) 
   views Int @default(0)
   likes Int @default(0)
+  comments Comment[]
   author User  @relation(fields: [authorId], references: [id])
   authorId Int
 
 }
-
-
