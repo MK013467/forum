@@ -14,6 +14,7 @@ type User = {
 
 // The Parent Component
 export const Layout = () => {
+
   const [user, setUser ] = useState<User|null>(null);
   const [loading , setLoading ] = useState(true);
 

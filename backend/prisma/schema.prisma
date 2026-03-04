@@ -36,7 +36,6 @@ model Comment{
   authorId Int 
   post Post @relation(fields: [postId] , references: [id] )
   postId Int  
-
 }
 
 
