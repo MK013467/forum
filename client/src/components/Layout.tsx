@@ -58,7 +58,9 @@ export const Layout = () => {
     <div className='min-h-screen"'>
         <Header>
         </Header>
-        <Outlet/>
+        <main className='flex-1 flex items-center justify-center'>
+          <Outlet/>
+        </main>
     </div>
     // </AuthContext.Provider>
   )

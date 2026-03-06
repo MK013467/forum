@@ -50,7 +50,7 @@ const LoginUserPage = () => {
   return (
 
     <form onSubmit={handleSubmit(onSubmit)}
-    className='w-3/4 max-w-3xl bg-white border rounded-lg border-sky-400 text-base p-8 py-12 w-80 sm:w-[352]'>
+    className='w-3/4 max-w-3xl bg-white border rounded-lg border-sky-400 text-base p-8 py-12 sm:w-[352]'>
       <p className='text-sky-500 text-3xl font-medium'>
         Login
       </p>

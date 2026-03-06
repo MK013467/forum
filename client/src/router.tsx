@@ -6,6 +6,7 @@ import LoginUserPage from "./components/auth/LoginUserPage";
 import SignUpUser from "./components/auth/SignUpUserPage";
 import UpdatePostPAge from "./components/post/UpdatePostPage";
 import { Layout } from "./components/Layout";
+import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 
 const router = createBrowserRouter([{
     element:<Layout/>,
@@ -43,6 +44,10 @@ const router = createBrowserRouter([{
         {
             path:"/post/:id/edit",
             element:<UpdatePostPAge/>
+        },
+        {
+            path:"/auth/reset-pass",
+            element:<ResetPasswordPage/>
         }
     ]
 }])

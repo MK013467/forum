@@ -7,6 +7,7 @@ import { LocalAuthGuard } from "./passport/LocalAuthGuard";
 
 @Controller('auth')
 export class AuthController{
+
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Req() req: any): Promise<{ message: string; user: any; }> {
@@ -43,6 +44,11 @@ export class AuthController{
     @Get('profile')
     getprofile(@Req() req:any){
         return req.user
+    }
+
+    @Post("forget-password")
+    sendEmail(){
+        
     }
 
     
