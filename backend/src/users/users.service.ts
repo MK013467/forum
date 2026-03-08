@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/CreateUser.dto';
 import * as bcrypt from 'bcrypt';
+import crypto from "crypto";
+import * as nodemailer from 'nodemailer';
+
 @Injectable()
 export class UsersService {
     constructor(private prisma:PrismaService){}
@@ -26,9 +29,18 @@ export class UsersService {
         return this.prisma.user.update( {where , data} );
     }
 
-    async getUser():Promise<User[]>{
+    async getAllUsers():Promise<User[]>{
         const users = await this.prisma.user.findMany({})
         return users;
+    }
+
+    async findUser( field:any , value:any ){
+        const user = await this.prisma.user.findUnique({
+            where:{
+                [field] : value
+            } as Prisma.UserWhereUniqueInput
+        })
+        return user;
     }
 
     async getUserById(id:number){
@@ -49,5 +61,7 @@ export class UsersService {
         })
         return user;
     }
+
+
 }
 

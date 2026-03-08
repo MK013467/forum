@@ -43,11 +43,19 @@ model Post{
   id Int @default(autoincrement()) @id
   title String
   content String? @db.VarChar(500)
-  createdAt DateTime @default(now()) 
+  createsAt DateTime @default(now()) 
   views Int @default(0)
   likes Int @default(0)
   comments Comment[]
   author User  @relation(fields: [authorId], references: [id])
   authorId Int
+}
 
+model VerificationCode{
+  id Int @default(autoincrement()) @id
+  userId Int
+  type String
+  code String
+  createsAt DateTime @default(now())
+  expiresAt DateTime  
 }

@@ -7,6 +7,7 @@ import SignUpUser from "./components/auth/SignUpUserPage";
 import UpdatePostPAge from "./components/post/UpdatePostPage";
 import { Layout } from "./components/Layout";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
+import CheckVerificationCodePage from "./components/auth/CheckVerificationCodePage";
 
 const router = createBrowserRouter([{
     element:<Layout/>,
@@ -16,15 +17,28 @@ const router = createBrowserRouter([{
             element: <PostsPage/>,
     
         },
-    
         {
-            path:"/auth/login",
-            element:<LoginUserPage/>
-        },
-    
-        {
-            path:"/auth/signup",
-            element:<SignUpUser/>
+            path:"/auth",
+            children:[
+                {
+                    path:"reset-pass",
+                    element:<ResetPasswordPage/>,
+                },
+                {
+        
+                    path:"checkvc",
+                    element:<CheckVerificationCodePage/>
+                },
+                {
+                    path:"login",
+                    element:<LoginUserPage/>
+                },
+            
+                {
+                    path:"signup",
+                    element:<SignUpUser/>
+                }
+            ]
         },
     
         {
@@ -45,10 +59,7 @@ const router = createBrowserRouter([{
             path:"/post/:id/edit",
             element:<UpdatePostPAge/>
         },
-        {
-            path:"/auth/reset-pass",
-            element:<ResetPasswordPage/>
-        }
+       
     ]
 }])
 

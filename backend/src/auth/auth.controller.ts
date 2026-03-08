@@ -1,12 +1,15 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Request , Response } from "express";
 import { PassportModule } from "@nestjs/passport";
 import { AuthenticatedGuard } from "./passport/AuthenticatedGuard";
 import { LocalAuthGuard } from "./passport/LocalAuthGuard";
+import { UsersService } from "src/users/users.service";
 
 @Controller('auth')
 export class AuthController{
+
+    constructor(private usersService: UsersService){}
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
@@ -45,11 +48,4 @@ export class AuthController{
     getprofile(@Req() req:any){
         return req.user
     }
-
-    @Post("forget-password")
-    sendEmail(){
-        
-    }
-
-    
 }

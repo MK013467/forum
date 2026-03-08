@@ -18,7 +18,7 @@ export class PostService {
                         select:{
                             username:true
                         }
-                    }
+                    } 
                 }
                 ,
                 where:{
@@ -72,7 +72,7 @@ export class PostService {
                 [orderBy]:orderDirection?? 'desc',
 
             }:{
-                createdAt:'desc'
+                createsAt:'desc'
             }
         })
         

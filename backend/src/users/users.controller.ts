@@ -23,7 +23,7 @@ export class UsersController {
 
     @Get()
     async getUsers(){
-        const users = this.userService.getUser()
+        const users = this.userService.getAllUsers()
         return users;
     }
 
