@@ -53,9 +53,12 @@ model Post{
 
 model VerificationCode{
   id Int @default(autoincrement()) @id
-  userId Int
+  userId Int @unique
   type String
   code String
+  token String?
   createsAt DateTime @default(now())
+  updatesAt DateTime?
   expiresAt DateTime  
+  requestNum Int @default(1)
 }

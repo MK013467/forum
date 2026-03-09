@@ -19,8 +19,8 @@ export class AccountController {
     }
 
     @Post('reset-password')
-    async resetPassword(@Body() body:ResetPasswordDto){
+    async resetPassword(@Body() resetPassword:ResetPasswordDto){
 
-        return this.accountService.resetPassword()
+        return this.accountService.resetPassword(resetPassword);
     }
 }

@@ -1,8 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ResetPasswordDto } from './dtos/ResetPassword.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AccountService {
@@ -27,17 +29,12 @@ export class AccountService {
             return otp;
         }
 
-
         //we stored hashed value of otp to user table
         const code = genereateOTP();
         const hashedCode = bcrypt.hashSync(code, salt);
 
-        if(!user){
-            console.log('User does not exist');
-            return {};
-        }       
-
-
+        console.log("OTP sent:", code);
+        console.log("OTP hash stored:", hashedCode);
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth:{
@@ -55,47 +52,143 @@ export class AccountService {
         }
         
         try {
-            await transporter.sendMail(mailOptions);
-            await this.prisma.verificationCode.create({
-                data: {
-                    userId: user.id,
-                    type: "PASSWORD_RESET",
-                    code: hashedCode,
-                    expiresAt: new Date(Date.now() + 60 * 5 * 1000)
+
+            //check whether the code is already sent
+            const existingVerificationCode = await this.prisma.verificationCode.findUnique({
+                where:{
+                    userId:user.id
                 }
             });
-    
-            console.log("saved to db");
-    
-            return { info: "Process is finished" };
+
+            //if yes then we first check the expires time and requestNum of the code
+            if(existingVerificationCode){
+                if(existingVerificationCode.expiresAt.getTime() < Date.now() || existingVerificationCode.requestNum >=5) {
+                    throw new UnauthorizedException('Code Expired or too many request');
+                }
+
+                else{
+                    const updatedCode = await this.prisma.verificationCode.update({
+                        where:{
+                            id:existingVerificationCode.id
+                        },
+                        data:{
+                            requestNum: {
+                                increment:1
+                            },
+                            updatesAt: new Date(Date.now()),
+                            expiresAt: new Date(Date.now() + 60*5*1000)
+                        }
+                    })
+
+                    await transporter.sendMail(mailOptions);
+                    return code;
+                }
+
+                
+            }
+
+            else{
+                await this.prisma.verificationCode.create({
+                    data: {
+                        userId: user.id,
+                        type: "PASSWORD_RESET",
+                        code: hashedCode,
+                        expiresAt: new Date(Date.now() + 60 * 5 * 1000),
+                    }
+                });
+        
+                console.log("saved to db");
+            }
+
+            await transporter.sendMail(mailOptions);
+            return code;
+
         } catch (error) {
             console.log(error);
             throw error;
         }
+
     }
 
-    //return a boolean whether or not sent code and code that user entered matches
+    //verifices hashed code and returns resetpasswordtoken
     async verifyCode( email:string , code:string){
+        try{
 
         const user = await this.userService.findUser('email',email);
-        if(!user ) return false;
+        if(!user ) throw new UnauthorizedException('user does not exist');
 
         const codeFound = await this.prisma.verificationCode.findFirst({
             where:{
-                id:user.id,
+                userId:user.id,
                 expiresAt:{
-                    gt: new Date()
+                    gt: new Date(Date.now())
                 }
             },
         })
+        //generate token
+
+        const generateToken = () => {
+            const token = crypto.randomBytes(12).toString('hex');
+            return token;
+        }
+        const salt = await bcrypt.genSalt(12);
+        const token = generateToken();
+        const hashedToken = bcrypt.hashSync(token, salt);
 
         if(!codeFound) throw new BadRequestException('Code Expired');        
-        const isMatch = await bcrypt.compare( code, codeFound.code );
+        const isMatch = await bcrypt.compare( code , codeFound.code);
+
+        console.log("OTP entered:", code);
+        console.log("OTP from DB:", codeFound.code);
+        console.log(`test result: ${isMatch}`)
         if(!isMatch) throw new BadRequestException('Invalid Code');
+
+        //store hashed token in db
+        const existingVerificationCode =  await this.prisma.verificationCode.update({
+            where:{
+                userId:user.id
+            },
+            data:{
+                token: hashedToken
+            }
+        })
+            return token;
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+
+    async resetPassword(resetPasswordDto: ResetPasswordDto) {
         
-        return true;
+        try{
+            const codeObject = await this.prisma.verificationCode.findUnique({
+                where:
+                    {
+                        userId:resetPasswordDto.userId
+                    }
+            })
+            if(!codeObject || !codeObject.token) throw new UnauthorizedException("");
+
+            const isAuthorized = await bcrypt.compare(resetPasswordDto.token, codeObject.token);
+
+            if(!isAuthorized) throw new UnauthorizedException("");
+
+            const updatedUser = await this.userService.updateUser({
+
+                where:{id:resetPasswordDto.userId},
+                data:{password:resetPasswordDto.password}
+            });
+            
+
+        } 
+
+        catch(err){
+            console.log(err);
+        }
+
 
     }
-    async resetPassword() {
-    }
+
+
 }
