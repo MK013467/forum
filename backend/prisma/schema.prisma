@@ -18,7 +18,7 @@ model User{
   username String @unique
   email String @unique
   password String
-  displayName String? @default("")
+  createsAt DateTime @default(now())
   posts Post[]
   comments Comment[]
 }
@@ -61,4 +61,16 @@ model VerificationCode{
   updatesAt DateTime?
   expiresAt DateTime  
   requestNum Int @default(1)
+}
+
+model Comment{
+ id Int 
+ content String
+ createsAt DateTime @default(now())
+ authorId Int
+ postId Int
+ author User @relation(fields:[authorId]
+,references:[id])
+ ownerPost Post @relation(fields:[postId],
+references:[id])
 }
