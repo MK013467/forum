@@ -1,3 +1,6 @@
+node_modules
 backend/.env
+backend/.env.*
+backend/node_modules
 backend/Dockerfile
-backend/src/prisma/migrations
+backend/prisma/migrations
