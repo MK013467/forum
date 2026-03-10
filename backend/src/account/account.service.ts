@@ -6,9 +6,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ResetPasswordDto } from './dtos/ResetPassword.dto';
 import * as crypto from 'crypto';
 
+
 @Injectable()
 export class AccountService {
     constructor(private  userService: UsersService, private  prisma:PrismaService){ }
+
 
     async sendVerificationCode(email) {
         const user = await this.userService.findUser('email', email);
@@ -33,8 +35,6 @@ export class AccountService {
         const code = genereateOTP();
         const hashedCode = bcrypt.hashSync(code, salt);
 
-        console.log("OTP sent:", code);
-        console.log("OTP hash stored:", hashedCode);
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth:{
@@ -61,9 +61,10 @@ export class AccountService {
             });
 
             //if yes then we first check the expires time and requestNum of the code
+
             if(existingVerificationCode){
-                if(existingVerificationCode.expiresAt.getTime() < Date.now() || existingVerificationCode.requestNum >=5) {
-                    throw new UnauthorizedException('Code Expired or too many request');
+                if( existingVerificationCode.requestNum >=5) {
+                    throw new UnauthorizedException('Too many request');
                 }
 
                 else{
@@ -75,6 +76,7 @@ export class AccountService {
                             requestNum: {
                                 increment:1
                             },
+                            code:hashedCode,
                             updatesAt: new Date(Date.now()),
                             expiresAt: new Date(Date.now() + 60*5*1000)
                         }
@@ -125,22 +127,21 @@ export class AccountService {
                 }
             },
         })
-        //generate token
 
+
+        //generate token
         const generateToken = () => {
             const token = crypto.randomBytes(12).toString('hex');
             return token;
         }
+
         const salt = await bcrypt.genSalt(12);
         const token = generateToken();
         const hashedToken = bcrypt.hashSync(token, salt);
 
-        if(!codeFound) throw new BadRequestException('Code Expired');        
+        if(!codeFound || codeFound.expiresAt.getTime() < Date.now() ) throw new BadRequestException('Code Expired');        
         const isMatch = await bcrypt.compare( code , codeFound.code);
 
-        console.log("OTP entered:", code);
-        console.log("OTP from DB:", codeFound.code);
-        console.log(`test result: ${isMatch}`)
         if(!isMatch) throw new BadRequestException('Invalid Code');
 
         //store hashed token in db
@@ -149,11 +150,15 @@ export class AccountService {
                 userId:user.id
             },
             data:{
-                token: hashedToken
+                token: hashedToken,
+        //when code is verified we should set requestNum to 0 so that the user can resetPassword again in the future.
+                requestNum:0
             }
         })
             return token;
         }
+
+        
         catch(err){
             console.log(err)
         }
@@ -174,13 +179,13 @@ export class AccountService {
 
             if(!isAuthorized) throw new UnauthorizedException("");
 
+            const salt = await bcrypt.genSalt(12);
+            const hashedPassword = await bcrypt.hash(resetPasswordDto.password, salt);
+
             const updatedUser = await this.userService.updateUser({
-
                 where:{id:resetPasswordDto.userId},
-                data:{password:resetPasswordDto.password}
+                data:{password:hashedPassword}
             });
-            
-
         } 
 
         catch(err){
