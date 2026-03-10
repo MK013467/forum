@@ -1,0 +1,3 @@
+backend/.env
+backend/Dockerfile
+backend/src/prisma/migrations
