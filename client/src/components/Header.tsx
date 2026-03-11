@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import ProfilePage from './ProfilePage';
 import { FaUserLarge } from "react-icons/fa6";
 import useCheckLogin from './hooks/useCheckLogin';
 import {api} from "@shared/lib/api";

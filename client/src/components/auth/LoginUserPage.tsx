@@ -32,7 +32,7 @@ const LoginUserPage = () => {
     try{
       const response = await api.post("/auth/login", data);
       console.log("Success:"+response.data);
-      navigate("/")
+      
     }
 
     catch(error:any){
@@ -50,13 +50,13 @@ const LoginUserPage = () => {
   return (
 
     <form onSubmit={handleSubmit(onSubmit)}
-    className='w-3/4 max-w-3xl bg-white border rounded-lg border-sky-400 text-base p-8 py-12 sm:w-[352]'>
-      <p className='text-sky-500 text-3xl font-medium'>
+    className='w-4/5 max-w-2xl bg-white border rounded-lg border-gray-200 text-base p-8 py-12 sm:w-[352]'>
+      <p className='font-gray-900 text-3xl font-medium mb-4'>
         Login
       </p>
-      <input {...register("username")} type='text' placeholder='username or email' className='w-full border bg-slate-100 rounded-2xl border-sky-400 p-4 py-2 my-4'/>
+      <input {...register("username")} type='text' placeholder='username or email' className='w-full border bg-whit rounded-2xl border-gray-200 p-4 py-2 my-4'/>
       <div className='w-full relative my-2'>
-        <input {...register("password")} type={showPassword? 'text':'password'} placeholder='password' className='w-full bg-slate-100 border rounded-2xl border-sky-400 px-4 py-2 pr-12'/>
+        <input {...register("password")} type={showPassword? 'text':'password'} placeholder='password' className='w-full bg-white border rounded-2xl border-gray-200 px-4 py-2 pr-12'/>
         <button type="button" 
         onClick={() => setShowPassword(prev => !prev)}
         className="aspect-square

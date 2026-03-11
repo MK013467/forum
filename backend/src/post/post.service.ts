@@ -89,14 +89,14 @@ export class PostService {
 
 
 
-    async createPost(postdto : Postdto) {
+    async createPost(postdto : Postdto, id:number) {
 
         //createdAt is handled by prisma schema
         const posts = this.prisma.post.create({data:{
 
             title: postdto.title,
             content: postdto.content,
-            authorId: postdto.authorId,
+            authorId: id,
         }});
         return posts;
     }

@@ -60,6 +60,7 @@ model Comment{
  content String
  likes Int @default(0)
  createsAt DateTime @default(now())
+ updatesAt DateTime @updatedAt()
  authorId Int
  postId Int 
  author User @relation(fields: [authorId], references: [id])

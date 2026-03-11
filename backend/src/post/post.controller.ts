@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
 import { Postdto } from './dto/Post.dto';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
@@ -22,13 +22,15 @@ export class PostController {
         return post;
     }
 
-
-
     
     @UseGuards(AuthenticatedGuard)
-    @Post("create")
-    async createPost(@Body() postdto: Postdto ){
-        const post = await this.postService.createPost(postdto);
+    @Post()
+    async createPost(@Body() postdto: Postdto, @Req() req:any ){
+        if(!req.user) throw new UnauthorizedException('');
+
+        const id = req.user.id;
+
+        const post = await this.postService.createPost(postdto, id);
         return post;
 
     }

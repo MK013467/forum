@@ -44,8 +44,14 @@ export class AuthController{
 
 
     @UseGuards(AuthenticatedGuard)
-    @Get('profile')
+    @Post('profile')
     getprofile(@Req() req:any){
-        return req.user
+        return {
+            user: req.user ?? null,
+            isAuthenticated: req.isAuthenticated?.() ?? false,
+            sessionID: req.sessionID,
+            session: req.session,
+          };
+        
     }
 }

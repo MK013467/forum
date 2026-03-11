@@ -1,6 +1,10 @@
 ./node_modules
+node_modules
+
 backend/.env
 backend/.env.*
 backend/node_modules
 backend/Dockerfile
 backend/prisma/migrations
+
+client/node_modules

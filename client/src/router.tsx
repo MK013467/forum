@@ -8,6 +8,8 @@ import UpdatePostPAge from "./components/post/UpdatePostPage";
 import { Layout } from "./components/Layout";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import CheckVerificationCodePage from "./components/auth/CheckVerificationCodePage";
+import NotFoundPage from "./components/error/NotFoundPage";
+import ProfilePage from "./components/auth/ProfilePage";
 
 const router = createBrowserRouter([{
     element:<Layout/>,
@@ -37,6 +39,11 @@ const router = createBrowserRouter([{
                 {
                     path:"signup",
                     element:<SignUpUser/>
+                },
+
+                {
+                    path:'profile',
+                    element:<ProfilePage/>
                 }
             ]
         },
@@ -59,6 +66,10 @@ const router = createBrowserRouter([{
             path:"/post/:id/edit",
             element:<UpdatePostPAge/>
         },
+        {
+            path:'*',
+            element:<NotFoundPage/>
+        }
        
     ]
 }])

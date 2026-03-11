@@ -3,7 +3,5 @@ export class Postdto{
     content:string
     createdAt:Date
     views:number
-    likes:number
-    authorId:number
-    
+    likes:number    
 }

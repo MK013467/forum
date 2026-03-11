@@ -1,20 +1,27 @@
-import { createContext } from 'react'
+import { createContext, useContext } from "react";
 
-type User = {
-    id:number;
-    username:string;
-    email:string
-}
+export type User = {
+  id: number;
+  username: string;
+  email: string;
+};
 
-type AuthContextType = {
-    user: User | null;
-    isAuthenticated : boolean;
-    loading: boolean;
-    refreshUser: () => Promise<void>;
-    logout: () => Promise<void>;
-}
+export type AuthContextType = {
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  loading: boolean;
+  refreshUser: () => Promise<void>;
+  logout: () => Promise<void>;
+};
 
-export const AuthContext = createContext<AuthContextType|null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
+export const useAuth = () => {
+  const context = useContext(AuthContext);
 
-    
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthContext.Provider");
+  }
+
+  return context;
+};
