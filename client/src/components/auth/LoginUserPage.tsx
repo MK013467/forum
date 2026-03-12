@@ -31,8 +31,7 @@ const LoginUserPage = () => {
   const onSubmit:SubmitHandler<LoginForm> = async (data) => {
     try{
       const response = await api.post("/auth/login", data);
-      console.log("Success:"+response.data);
-      
+      navigate('/');
     }
 
     catch(error:any){

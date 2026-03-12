@@ -40,11 +40,13 @@ export class PostService {
 
     async getPosts(query:GetPostDto) {
 
-        const { searchField, orderBy, orderDirection } = query;
-
-        
-
+        const {searchField, searchBy, orderByField} = query;
+        console.log(query);
+        const page = Number(query.page) || 1.
+        const postsPerPage = 10;
+        const numPrevPosts = postsPerPage*(page-1);
         const posts = await this.prisma.post.findMany({
+            take:postsPerPage,
             include:{
                 author:{
                     select:{
@@ -53,27 +55,13 @@ export class PostService {
                 }
             },
             where:
-            searchField?{
-                OR:[
-                   {
-                    title:{
-                        contains:searchField,
-                        
-                    },
-                    content:{
-                        contains:searchField,
-                    }
-                   }
-                ]
-            }:undefined,
-
-
-            orderBy:orderBy? {
-                [orderBy]:orderDirection?? 'desc',
-
-            }:{
-                createsAt:'desc'
-            }
+             searchField? { [searchField] : { contains: searchBy }}:{}, 
+            skip:(page-1)*postsPerPage,
+            orderBy:[
+                orderByField? {[orderByField]:'desc'} :{} ,
+                {createsAt: 'desc'}
+            ]
+            
         })
         
          return posts.map(({ author, ...post }) => ({
@@ -126,13 +114,8 @@ export class PostService {
     
     async handlePostlike(userId:number , postId:number){
     const post = await this.prisma.post.findUnique({
-   where:{ id:postId
-}
-})
-   @Transaction
-   if(!post){
-this.prisma.post.delete({where:{id:post.id}}
-}
+        where:{ id:postId}
+        })
 }
    
     getAllPost() {

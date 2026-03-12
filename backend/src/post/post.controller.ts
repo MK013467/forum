@@ -9,16 +9,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('post')
 export class PostController {
     constructor(private postService:PostService){}
-  
-    @Get(":id")
-    async getPost(@Param('id', ParseIntPipe) id ){
-        const post = await this.postService.getPost(id);
-        return post;
-    }
+
 
     @Get()
     async getPosts(@Query() query:GetPostDto){
         const post = await this.postService.getPosts(query);
+        console.log('running')
         return post;
     }
 
@@ -32,7 +28,6 @@ export class PostController {
 
         const post = await this.postService.createPost(postdto, id);
         return post;
-
     }
 
     @UseGuards(AuthenticatedGuard)

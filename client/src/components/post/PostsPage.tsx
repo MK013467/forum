@@ -6,7 +6,7 @@ interface Post {
   id:number;
   title:string
   content:string
-  createdAt:string
+  createsAt:string
   views:number
   likes:number
   authorName:number
@@ -28,9 +28,15 @@ const PostsPage = () => {
   //get posts from backend
   useEffect( ()=>{
     const fetchData = async () =>{
-      const res = await api.get("/post");
-      console.log(res.data);
-      setPosts(res.data) ;
+      try{
+
+        const res = await api.get("/post");
+        console.log(res.data);
+        setPosts(res.data) ;
+      }
+      catch(err){
+        console.log(err);
+      }
 
     };
 
@@ -61,9 +67,9 @@ const PostsPage = () => {
           
             <tr key={post.id} onClick={()=> handleClickRow(post.id)} className='border-b-2 border-gray-100'>
               <th className='w-1/10'>{post.id}</th>
-              <th className='w-3/10 p-5 text-sm'>{post.title}</th>
+              <th className='w-3/10 p-5 text-sm'>{post.title.length < 30? post.title:(post.title.substring(0,30)+'...') }</th>
               <th className='w-1/10 '>{post.authorName}</th>
-              <th className='w-1/10'>{formatDate(post.createdAt)} </th>
+              <th className='w-1/10'>{formatDate(post.createsAt)} </th>
               <th className='w-1/10'>{post.views}</th>
               <th className=''>{post.likes}</th>
             </tr>
