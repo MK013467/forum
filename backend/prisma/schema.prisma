@@ -72,9 +72,20 @@ enum LikeType{
   comment
 }
 
-model Like{
-  id Int @default(autoincrement()) @id
-  type LikeType
+model Post_Like{
+  id Int @default(autoincrement()) @id 
   // if type==post then this would be id of the post otherwise it would be the id of the comment
-  belongstoId Int
+  userId Int 
+  postId Int
+  @@unique([postId,userId])
+
+}
+
+model Comment_Like{
+  id Int @default(autoincrement()) @id
+  userId Int
+  commentId Int
+  @@unique([userId,commentId])
+
+  
 }
