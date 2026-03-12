@@ -124,7 +124,17 @@ export class PostService {
 
     }
     
-
+    async handlePostlike(userId:number , postId:number){
+    const post = await this.prisma.post.findUnique({
+   where:{ id:postId
+}
+})
+   @Transaction
+   if(!post){
+this.prisma.post.delete({where:{id:post.id}}
+}
+}
+   
     getAllPost() {
         
     }
