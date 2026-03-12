@@ -33,8 +33,8 @@ model UserSetting{
 
 model Post{
   id Int @default(autoincrement()) @id
-  title String
-  content String? @db.VarChar(500)
+  title String @db.VarChar(300)
+  content String? @db.VarChar(10000)
   createsAt DateTime @default(now()) 
   views Int @default(0)
   likes Int @default(0)
@@ -57,7 +57,7 @@ model VerificationCode{
 
 model Comment{
  id Int  @default(autoincrement()) @id
- content String
+ content String @db.Varchar(2000)
  likes Int @default(0)
  createsAt DateTime @default(now())
  updatesAt DateTime @updatedAt()
