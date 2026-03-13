@@ -10,11 +10,16 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class PostController {
     constructor(private postService:PostService){}
 
-
     @Get()
     async getPosts(@Query() query:GetPostDto){
         const post = await this.postService.getPosts(query);
-        console.log('running')
+        return post;
+    }
+
+    @Get(':id')
+    async getPostId(@Param('id', ParseIntPipe) id){
+        const post = await this.postService.getPost(id);
+        console.log(post);
         return post;
     }
 

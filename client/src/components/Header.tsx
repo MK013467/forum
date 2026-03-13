@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom'
 import { FaUserLarge } from "react-icons/fa6";
 import useCheckLogin from './hooks/useCheckLogin';
 import {api} from "@shared/lib/api";
+import { useAuth } from './auth/AuthContext';
 interface HeaderProps{
   children?:React.ReactNode
 }
 const Headers = () => {
-
-  const {isAuthenticated} = useCheckLogin();
+  const authContext = useAuth();
+  const isAuthenticated = authContext.user!= null;
 
   const handleSignUp = async () => {
     try{

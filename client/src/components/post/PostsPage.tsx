@@ -73,6 +73,7 @@ const PostsPage = () => {
               <th className='w-1/10'>{post.views}</th>
               <th className=''>{post.likes}</th>
             </tr>
+            
           )}
         </tbody>
       </table> 

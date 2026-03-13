@@ -41,10 +41,8 @@ export class PostService {
     async getPosts(query:GetPostDto) {
 
         const {searchField, searchBy, orderByField} = query;
-        console.log(query);
         const page = Number(query.page) || 1.
         const postsPerPage = 10;
-        const numPrevPosts = postsPerPage*(page-1);
         const posts = await this.prisma.post.findMany({
             take:postsPerPage,
             include:{

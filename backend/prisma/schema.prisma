@@ -67,11 +67,6 @@ model Comment{
  ownerPost Post @relation(fields: [postId], references: [id])
 }
 
-enum LikeType{
-  post
-  comment
-}
-
 model Post_Like{
   id Int @default(autoincrement()) @id 
   // if type==post then this would be id of the post otherwise it would be the id of the comment
@@ -81,10 +76,16 @@ model Post_Like{
 
 }
 
+enum Like_Type{
+  like
+  dislike
+}
+
 model Comment_Like{
   id Int @default(autoincrement()) @id
+  type Like_Type 
   userId Int
-  commentId Int
+  commentId Int 
   @@unique([userId,commentId])
 
   
