@@ -50,14 +50,14 @@ model VerificationCode{
   code String
   token String?
   createsAt DateTime @default(now())
-  updatesAt DateTime?
+  updatesAt DateTime? @updatedAt()
   expiresAt DateTime  
   requestNum Int @default(1)
 }
 
 model Comment{
  id Int  @default(autoincrement()) @id
- content String @db.Varchar(2000)
+ content String? @db.VarChar(2000)
  likes Int @default(0)
  createsAt DateTime @default(now())
  updatesAt DateTime @updatedAt()

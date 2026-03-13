@@ -18,7 +18,7 @@ export class PostController {
 
     @Get(':id')
     async getPostId(@Param('id', ParseIntPipe) id){
-        const post = await this.postService.getPost(id);
+        const post = await this.postService.getPostById(id);
         console.log(post);
         return post;
     }

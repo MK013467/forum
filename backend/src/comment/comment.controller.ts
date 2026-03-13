@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Req } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { ShowCommentDto } from './dtos/ShowComment.dto';
 import { CreateCommentdto } from './dtos/CreateComment.dto';
@@ -9,14 +9,15 @@ export class CommentController {
 
     constructor(private comemntService: CommentService){}
 
-    @Post()
-    async showAllComentsforPost(@Body() dto:ShowCommentDto){
+    @Get()
+    async showAllComentsforPost(@Body() dto:ShowCommentDto): Promise<(dto: ShowCommentDto) => Promise<{ content: string; likes: number; createsAt: Date; updatesAt: Date; id: number; authorId: number; postId: number; }[] | undefined>>{
         const comments = await this.comemntService.findAllCommentsforPost
         return comments;
     }
 
     @Post('')
     async createComment(@Body() dto:CreateCommentdto){
+        console.log('running');
         const comment = await this.comemntService.createComment(dto);
         return comment;
     }

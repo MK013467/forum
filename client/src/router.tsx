@@ -54,7 +54,7 @@ const router = createBrowserRouter([{
         },
     
         {
-            path:"/post/:id",
+            path:"/post/:postId",
             element:<OnePostPage/>
         },
     

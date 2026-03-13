@@ -10,7 +10,7 @@ export class PostService {
     constructor(private prisma: PrismaService){}
 
 
-    async getPost(id:number) {
+    async getPostById(id:number) {
         try{
             const post = this.prisma.post.update({
                 include:{
@@ -18,7 +18,14 @@ export class PostService {
                         select:{
                             username:true
                         }
-                    } 
+                    },
+                    comments:{
+                        include:{
+                            author:{
+                                select: {username:true}
+                            }
+                        }
+                    }
                 }
                 ,
                 where:{

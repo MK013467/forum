@@ -7,8 +7,7 @@ import z from 'zod'
 
 const createPostFormSchema = z.object({
   title: z.string().min(1, 'title is required'),
-  content: z.string().min(1, 'content is required'),
-  
+  content: z.string()
 });
 
 
@@ -50,7 +49,7 @@ const CreatePostPage = () => {
            resize-none align-top'/>
           <button disabled={!isValid}
           type='submit' className={`absolute right-0 rounded-xl text-gray-400 font-bold
-           bottom-0 px-4 p-2 ${isValid? "bg-gray-400 cursor not-allowed": 'bg-red-500'}}`}>Post</button>
+           bottom-0 p-4 ${isValid? "bg-gray-400 cursor not-allowed": 'bg-red-500'}}`}>Post</button>
         </form>
        </div>
       
