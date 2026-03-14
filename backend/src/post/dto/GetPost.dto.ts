@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import { IsIn, IsInt, IsOptional, IsPositive, IsString } from "class-validator";
 
 
@@ -17,5 +17,6 @@ export class GetPostDto{
     orderByField?: 'creatdAt' | 'likes' | 'views';
 
     @IsOptional()
-    page: string;
+    @Transform(({value}) => Number(value))
+    page: number;
 }

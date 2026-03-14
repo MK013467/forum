@@ -29,26 +29,27 @@ export const Layout = () => {
     }
   };
 
-  // useEffect(() => {
-  //   refreshUser();
-  // }, []);
+  useEffect(() => {
+    refreshUser();
+  }, []);
 
   return (
-    // <AuthContext.Provider
-    //   value={{
-    //     user,
-    //     setUser,
-    //     loading,
-    //     refreshUser,
-    //     logout,
-    //   }}
-    // >
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        loading,
+        refreshUser,
+        logout,
+      }}
+    >
       <div className="w-full min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1 flex items-center justify-center">
+        <div className="h-40 shrink-0" />
+        <main className="flex-1 flex items-center justify-center mb-20">
           <Outlet />
         </main>
       </div>
-    // </AuthContext.Provider>
+    </AuthContext.Provider>
   );
 };

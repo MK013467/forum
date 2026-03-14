@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@shared/lib/api';
 import { GoEye } from 'react-icons/go';
 import { GoEyeClosed } from "react-icons/go";
+import { useAuth } from './AuthContext';
 
 const LoginFormSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -16,9 +17,10 @@ type LoginForm = z.infer<typeof LoginFormSchema>;
 
 
 const LoginUserPage = () => {
-
+  
+  const { setUser } = useAuth();
   const { register , handleSubmit,  setError, 
-    formState:{errors, isValid }} = useForm<LoginForm>({
+    formState:{errors, isValid , isSubmitting}} = useForm<LoginForm>({
     resolver: zodResolver(LoginFormSchema),
     mode: "onChange"
   });
@@ -31,18 +33,19 @@ const LoginUserPage = () => {
   const onSubmit:SubmitHandler<LoginForm> = async (data) => {
     try{
       const response = await api.post("/auth/login", data);
-      
+      console.log(response.data);
+      setUser(response.data.user);
       navigate('/');
     }
 
     catch(error:any){
-      console.log("LOGIN ERROR:", error.response?.data);
+      console.log("LOGIN ERROR:", error);
 
       setError("root", {
         type: "server",
         message:
           error.response?.data?.message ||
-          "아이디 또는 비밀번호가 잘못되었습니다",
+          "username or id is incorrect",
       });
     }   
   }
@@ -66,11 +69,11 @@ const LoginUserPage = () => {
       </div>
       <p className='text-red-500'>{errors&& errors.root?.message as string}</p>
       <Link to={'/user/signup'} className='text-indigo-500 text-sm'>Forgot a Password?</Link>
-      <button   disabled={!isValid}
+      <button   disabled={!isValid || isSubmitting}
         type='submit'
         className={`w-full mt-2 rounded-2xl p-4 py-2 text-white text-l font-semibold 
         ${!isValid ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-500"}
-        `}> Login</button>
+        `}> {!isSubmitting? 'Login':'Submitting'}</button>
     <p className="text-gray-500 text-sm mt-3 mb-11">Don’t have an account? <Link className="text-indigo-500" to={'/user/signup'}> Sign up </Link> </p>
     </form>
   )

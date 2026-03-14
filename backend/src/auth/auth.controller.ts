@@ -1,16 +1,18 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Request , Response } from "express";
-import { PassportModule } from "@nestjs/passport";
 import { AuthenticatedGuard } from "./passport/AuthenticatedGuard";
 import { LocalAuthGuard } from "./passport/LocalAuthGuard";
 import { UsersService } from "src/users/users.service";
+import { SkipThrottle, Throttle } from "@nestjs/throttler";
 
 @Controller('auth')
 export class AuthController{
 
-    constructor(private usersService: UsersService){}
 
+    
+    // 5 login attempts per minute
+    @Throttle({ default: { ttl: 60000, limit: 5 } }) 
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Req() req: any): Promise<{ message: string; user: any; }> {
@@ -28,7 +30,7 @@ export class AuthController{
         };
     }
     
-
+    @SkipThrottle()
     @Post('logout')
     async logOut(@Req() req:Request , @Res() res:Response){
           //  Terminate Passport session
@@ -44,7 +46,7 @@ export class AuthController{
 
 
     @UseGuards(AuthenticatedGuard)
-    @Post('profile')
+    @Get('profile')
     getprofile(@Req() req:any){
         return {
             user: req.user ?? null,

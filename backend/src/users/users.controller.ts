@@ -29,7 +29,7 @@ export class UsersController {
 
     @Get(":id")
     async getUserById(@Param('id', ParseIntPipe) id:number){
-        const user =  this.userService.getUserById(id);
+        const user =  this.userService.findUserById(id);
         return user;
     }
 

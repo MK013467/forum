@@ -8,8 +8,8 @@ interface HeaderProps{
   children?:React.ReactNode
 }
 const Headers = () => {
-  const authContext = useAuth();
-  const isAuthenticated = authContext.user!= null;
+  const {user} = useAuth();
+  const isAuthenticated = user!= null;
 
   const handleSignUp = async () => {
     try{
@@ -20,18 +20,19 @@ const Headers = () => {
   }
 
   return (
-    <header className="w-full bg-blue-400 sticky top-0 z-50 shadow-md px-4 py-4">
-      <div className='max-6-xl flex items-center justify-between'>
+    <header className="fixed inset-x-0 top-0 z-50 h-20 bg-white text-gray-800 border-b border-gray-900 px-40">
+      <div className='flex items-center justify-between'>
+      {/* ixed inset-x-0 top-0 z-50 left-0 bg-white text-gray-700 body-font border-b border-gray-200 */}
         {/* Logo */}
-        <Link to="/" className="w-4 bg-[url('/background.jpg')] bg-cover bg-center w-20 h-20">
+        <Link to="/" className="bg-[url('/blog_forum_logo.svg')] bg-cover bg-center w-40 h-20">
           
         </Link>
 
         <nav className='flex gap-20'>
 
-          {isAuthenticated&&
+          {!isAuthenticated&&
             <Link 
-              to="/auth/logout"
+              to="/auth/signup"
               className='' onClick={handleSignUp}>
                 SignUp
             </Link>}

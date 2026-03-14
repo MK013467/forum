@@ -12,8 +12,8 @@ export class PostController {
 
     @Get()
     async getPosts(@Query() query:GetPostDto){
-        const post = await this.postService.getPosts(query);
-        return post;
+        const result = await this.postService.getPosts(query);
+        return result;
     }
 
     @Get(':id')

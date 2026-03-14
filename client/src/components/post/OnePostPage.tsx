@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@shared/lib/api';
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import z from 'zod';
+import { useAuth } from '../auth/AuthContext';
 
 interface Post {
   id:number;
@@ -45,7 +46,8 @@ type createCommentForm = z.infer<typeof createCommentFormSchema>;
 const OnePostPage = () => {
 
   const navigate = useNavigate();
-
+  const { user } = useAuth();
+  console.log(user);
   //for posts
   const {postId = ""} = useParams();
   const [post, setPost ]= useState<Post|null>(null);
@@ -53,6 +55,7 @@ const OnePostPage = () => {
 
   //for comments 
   const [comments, setComments ] = useState<Comment[]>([]);
+
 
   const {register, handleSubmit, setError} = useForm<createCommentForm>({
     resolver:zodResolver(createCommentFormSchema),
@@ -63,12 +66,10 @@ const OnePostPage = () => {
     try{
       const commentDto = {
         ...data,
-        authorId : 1,
-        postId: 1
+        authorId : user?.id,
+        postId: postId
       }
-      console.log(commentDto);
       const response = await api.post('/comment',commentDto);
-      console.log(response.data);
       setComments(prev => [...prev, response.data]);
       navigate('')
     }

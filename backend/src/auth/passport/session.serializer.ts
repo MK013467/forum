@@ -23,8 +23,7 @@ export class SessionSerializer extends PassportSerializer{
         return done(new Error('User not found'), null);
       }
   
-      const { password, ...safeUser } = user;
-      done(null, safeUser);
+      done(null, user);
     }
 
 }

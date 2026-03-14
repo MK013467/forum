@@ -48,9 +48,11 @@ export class PostService {
     async getPosts(query:GetPostDto) {
 
         const {searchField, searchBy, orderByField} = query;
-        const page = Number(query.page) || 1.
+        const page = query.page || 1.
         const postsPerPage = 10;
-        const posts = await this.prisma.post.findMany({
+        const [total, posts] = await this.prisma.$transaction([
+            this.prisma.post.count(),
+            this.prisma.post.findMany({
             take:postsPerPage,
             include:{
                 author:{
@@ -65,15 +67,20 @@ export class PostService {
             orderBy:[
                 orderByField? {[orderByField]:'desc'} :{} ,
                 {createsAt: 'desc'}
-            ]
-            
-        })
+            ]})
+        ])
         
-         return posts.map(({ author, ...post }) => ({
+         const postWithAuthor =  posts.map(({ author, ...post }) => ({
             
             ...post,
             authorName: author.username,
           } ) );
+
+          return {
+            postWithAuthor,
+            totalPages: Math.ceil(total/ postsPerPage),
+            currentPage: page
+          }
     }
     
 
