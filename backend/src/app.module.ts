@@ -9,6 +9,7 @@ import { S3Module } from './s3/s3.module';
 import { CommentModule } from './comment/comment.module';
 import { AccountModule } from './account/account.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [ ThrottlerModule.forRoot([
@@ -18,7 +19,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     },
   ]),UsersModule, PrismaModule, AuthModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'client', 'dist'),
-  }), PostModule, S3Module, CommentModule,  AccountModule],
+  }), PostModule, S3Module, CommentModule,  AccountModule, LikeModule],
   controllers: [],
   providers: [],
 })

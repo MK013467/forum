@@ -5,6 +5,8 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import z from 'zod';
 import { useAuth } from '../auth/AuthContext';
+import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
+
 
 interface Post {
   id:number;
@@ -78,6 +80,64 @@ const OnePostPage = () => {
     }
   }
 
+  const handlePostLike = async (commentId:number) =>{
+    try{
+      const data = {
+        targetId: postId,
+        type:'like'
+      }
+      const result = api.post("/like/post", data);
+      console.log(result);
+    }
+    catch(err:any ){
+      console.log(err.response?.msg);
+    }
+  }
+
+  const handlePostDislike = async (postId:number) =>{
+    try{
+      const data = {
+        targetId: postId,
+        type:'dislike'
+      }
+      const result = api.post("/like/post", data);
+      console.log(result);
+    }
+
+    catch(err:any ){
+      console.log(err.response?.msg);
+    }
+  }
+
+
+  const handleCommentLike = async (commentId:number) =>{
+    try{
+      const data = {
+        targetId: commentId,
+        type:'like'
+      }
+      const result = api.post("/like/comment", data);
+      console.log(result);
+    }
+    catch(err:any ){
+      console.log(err.response?.msg);
+    }
+  }
+
+  const handleCommentDislike = async (commentId:number) =>{
+    try{
+      const data = {
+        targetId: commentId,
+        type:'dislike'
+      }
+      const result = api.post("/like/comment", data);
+      console.log(result);
+    }
+    catch(err:any ){
+      console.log(err.response?.msg);
+    }
+  }
+
 
   useEffect(()=>{
     const fetchData = async(id:string) => {
@@ -99,50 +159,86 @@ const OnePostPage = () => {
     }
 
       return(
-        <div className="w-full px-80 p-4 text-base">
-          <div className='flex items-center justify-between mb-8'>
-            <span className='font-bold text-2xl'>{post.title}</span>
-            <span className=''>{post.createsAt.substring(0,10)}</span>
+        <div className="w-full min-h-screen px-80 p-4 text-base ">
+          <div className='flex items-center justify-between mb-6 border-b border-gray-200 pb-4'>
+            <span className='font-bold text-3xl tracking-tight'>{post.title}</span>
+            <span className='text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full'>{post.createsAt.substring(0,10)}</span>
           </div>
-          <div className='flex items-center justify-between'>
-                <span className=''>{post.author.username}</span>
-                <div className='flex flex-end gap-10'>
-                  <span className=''>views {post.views}</span>
-                  <span className=''>likes {post.likes}</span>
-                  <span className=''>comments {post.comments.length}</span>
-                </div>
+          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center rounded-full bg-sky-50 px-4 py-2 font-semibold text-sky-700">
+            <span>views {post.views}</span>
+          </div>
 
+            <div className="flex items-center gap-2">
+              <button disabled={!user}
+                onClick={() => handlePostLike(post.id)}
+                className={`flex items-center gap-1 rounded-full px-2 py-2 text-gray-700 ${user? 'hover:bg-blue-50 hover:text-blue-700 transition':''}`}
+              >
+                <ThumbsUp className="w-4 h-4" />
+                {post.likes > 0 && <span>{post.likes}</span>}
+              </button>
+
+              <button disabled={!user}
+                onClick={() => handlePostDislike(post.id)}
+                className={`flex items-center gap-1 rounded-full px-2 py-2 text-gray-700 ${user? ' hover:bg-rose-50 hover:text-rose-700 transition':''}`}
+              >
+                <ThumbsDown className="w-4 h-4" />
+                {post.likes < 0 && <span>{post.likes}</span>}
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 font-semibold text-emerald-700">
+              <MessageCircle className="w-4 h-4" />
+              <span>{post.comments.length}</span>
+            </div>
           </div>
           <div className='py-4'>
               <p className='px-2'> {post.content}</p>
           </div>
           <form onSubmit={handleSubmit(onCommentSubmit)}
           className='flex flex-col gap-2 mt-4'>
-              <input {...register('content')} placeholder='Text'
-              className='w-full border rounded-xl p-4'/>
+              {user && <textarea {...register('content')} placeholder='Text'
+              className='w-full min-h-32 border rounded-xl p-4'/>}
+
+              {user && 
               <button 
               type='submit'
               className='self-end border rounded-xl border-gray-400 text-white font-bold bg-blue-400 p-4 py-2'> comment
               </button>
+              }
+              
           </form>{comments.map((comment, index) =>
         <div key={index} className='flex flex-col gap-1 py-3 border-b border-gray-200'>
           <div className='flex items-center justify-between'>
             <span className='text-sm font-semibold text-gray-700'> {comment.author.username}</span>
             <span className='text-xs text-gray-400'>{comment.createsAt.substring(0, 10)}</span>
-          </div>
+          </div> 
           <p className='text-gray-600 text-sm'>{comment.content}</p>
           <div className='flex items-center gap-1 text-xs text-gray-400'>
-            <span>👍</span>
-            <span>{comment.likes}</span>
+            <div className='flex flex-1 mt-2'> 
+              <button disabled={!user}
+              onClick={()=> handleCommentLike(comment.id)}
+              className='w-10 h-10 flex bg-white gap-1'>
+                <ThumbsUp className='w-4 h-4'/>
+                {comment.likes>=0 && <span>{comment.likes}</span>}
+              </button>
+              
+              <button disabled={!user}
+              onClick={() => handleCommentDislike(comment.id)}
+              className='w-10 h-10 flex bg-white gap-1'>
+                <ThumbsDown className='w-4 h-4'/>
+                {comment.likes<0 && <span>{comment.likes}</span>}
+              </button>
+            </div>
+            <div>
+              <span>{comment.likes}</span>
+            </div>
           </div>
         </div>
-)}
+        )}
 
         </div>
       )
 }
     
-  
-  
-
 export default OnePostPage

@@ -1,6 +1,6 @@
 import { api } from '@shared/lib/api'
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft , FaChevronRight} from 'react-icons/fa6';
 interface Post {
   id:number;
@@ -18,12 +18,9 @@ const PostsPage = () => {
   const [posts, setPosts] = useState<Post[]> ([]);
 
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  const limit = 10;
 
   const toPrevPage = ()=>{
     // navigate(`?`)
@@ -46,7 +43,6 @@ const PostsPage = () => {
       try{
 
         const res = await api.get(`/post?page=${currentPage}`);
-        console.log(res.data);
         setPosts(res.data.postWithAuthor) ;
         setCurrentPage(res.data.currentPage);
         setTotalPages( res.data.totalPages);
@@ -119,10 +115,6 @@ const PostsPage = () => {
             next<FaChevronRight/>
           </button>
         </div>
-        {/* <button disabled={currentPage === totalPages}
-        className='border px-4 py-2 rounded-lg bg-blue-500 text-white'>
-          Write a Post
-        </button> */}
       </div>
       </div>
     </div>

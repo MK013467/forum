@@ -10,7 +10,7 @@ export class CommentController {
     constructor(private comemntService: CommentService){}
 
     @Get()
-    async showAllComentsforPost(@Body() dto:ShowCommentDto): Promise<(dto: ShowCommentDto) => Promise<{ content: string; likes: number; createsAt: Date; updatesAt: Date; id: number; authorId: number; postId: number; }[] | undefined>>{
+    async showAllComentsforPost(@Body() dto:ShowCommentDto){
         const comments = await this.comemntService.findAllCommentsforPost
         return comments;
     }

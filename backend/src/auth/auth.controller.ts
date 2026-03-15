@@ -33,7 +33,7 @@ export class AuthController{
     @SkipThrottle()
     @Post('logout')
     async logOut(@Req() req:Request , @Res() res:Response){
-          //  Terminate Passport session
+          //Terminate Passport session
         req.logout((err: any) => {
                 if (err) throw new Error('Logout failed');
             });
@@ -41,7 +41,7 @@ export class AuthController{
 
         // Clear the cookie
         res.clearCookie('connect.sid'); // 'connect.sid' is default
-        res.status(200).json({ message: '로그아웃이 성공적으로 완료되었습니다.' });
+        res.status(200).json({ message: 'user logged out.' });
     }
 
 
