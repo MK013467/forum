@@ -7,6 +7,7 @@ import z from 'zod';
 import { useAuth } from '../auth/AuthContext';
 import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useQuery , useMutation } from '@tanstack/react-query';
+import {useQuery} from '@tanstack/Query';
 
 interface Post {
   id:number;
@@ -42,7 +43,9 @@ const createCommentFormSchema = z.object({
 
 type createCommentForm = z.infer<typeof createCommentFormSchema>;
 
-
+const fetchPost = async (postId:num)=>{
+  const response = await api.get('post/${postId}')
+};
 
 
 const OnePostPage = () => {
@@ -53,7 +56,10 @@ const OnePostPage = () => {
   //for posts
   const {postId = ""} = useParams();
   const [post, setPost ]= useState<Post|null>(null);
-
+ const{data:post,isLoading, isError, error} = useQuery<Post>({
+     queryKey:['post',postId],
+     queryFn: (postId:num) =>fetchPost(postId)
+})
 
   //for comments 
   const [comments, setComments ] = useState<Comment[]>([]);
