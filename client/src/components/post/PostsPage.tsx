@@ -2,6 +2,7 @@ import { api } from '@shared/lib/api'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft , FaChevronRight} from 'react-icons/fa6';
+import { useQuery } from '@tanstack/react-query';
 interface Post {
   id:number;
   title:string
