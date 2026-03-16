@@ -77,7 +77,7 @@ export class PostService {
           } ) );
 
           return {
-            postWithAuthor,
+            posts:postWithAuthor,
             totalPages: Math.ceil(total/ postsPerPage),
             currentPage: page
           }

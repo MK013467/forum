@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import z from 'zod';
 import { useAuth } from '../auth/AuthContext';
 import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
-
+import { useQuery , useMutation } from '@tanstack/react-query';
 
 interface Post {
   id:number;
@@ -57,6 +57,7 @@ const OnePostPage = () => {
 
   //for comments 
   const [comments, setComments ] = useState<Comment[]>([]);
+  const [actionError, setActionError] = useState('');
 
 
   const {register, handleSubmit, setError} = useForm<createCommentForm>({
@@ -80,17 +81,18 @@ const OnePostPage = () => {
     }
   }
 
-  const handlePostLike = async (commentId:number) =>{
+  const handlePostLike = async (postId:number) =>{
     try{
       const data = {
         targetId: postId,
         type:'like'
       }
-      const result = api.post("/like/post", data);
-      console.log(result);
+      setActionError('')
+      api.post("/like/post", data);
+      setActionError('');
     }
     catch(err:any ){
-      console.log(err.response?.msg);
+      setActionError(err.response?.data?.message || 'Failed to like post');
     }
   }
 
@@ -100,12 +102,13 @@ const OnePostPage = () => {
         targetId: postId,
         type:'dislike'
       }
-      const result = api.post("/like/post", data);
-      console.log(result);
+      setActionError('');
+      api.post("/like/post", data);
+      
     }
 
     catch(err:any ){
-      console.log(err.response?.msg);
+      setActionError(err.response?.data?.message || 'Failed to dislike post');
     }
   }
 
@@ -116,11 +119,11 @@ const OnePostPage = () => {
         targetId: commentId,
         type:'like'
       }
-      const result = api.post("/like/comment", data);
-      console.log(result);
+      setActionError('')
+      api.post("/like/comment", data);
     }
     catch(err:any ){
-      console.log(err.response?.msg);
+      setActionError(err.response?.data?.message || 'Failed to like comment');
     }
   }
 
@@ -130,11 +133,12 @@ const OnePostPage = () => {
         targetId: commentId,
         type:'dislike'
       }
-      const result = api.post("/like/comment", data);
-      console.log(result);
+      setActionError('')
+      api.post("/like/comment", data);
     }
     catch(err:any ){
-      console.log(err.response?.msg);
+      setActionError(err.response?.data?.message || 'Failed to dislike comment');
+
     }
   }
 
@@ -234,9 +238,10 @@ const OnePostPage = () => {
               <span>{comment.likes}</span>
             </div>
           </div>
+          
         </div>
         )}
-
+        
         </div>
       )
 }

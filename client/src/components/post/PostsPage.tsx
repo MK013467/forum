@@ -1,8 +1,8 @@
 import { api } from '@shared/lib/api'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import {  useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaChevronLeft , FaChevronRight} from 'react-icons/fa6';
-import { useQuery } from '@tanstack/react-query';
+import {  useQuery } from '@tanstack/react-query';
 interface Post {
   id:number;
   title:string
@@ -10,25 +10,40 @@ interface Post {
   createsAt:string
   views:number
   likes:number
-  authorName:number
+  authorName:string
+}
+interface PostResponse{
+  posts:Post[],
+  totalPages:number,
+  currentPage:number
+}
+const fetchPost =  async (page:number) => {
+  const result = await api.get(`/post?page=${page}`);
+  return result.data;
 }
 
-
 const PostsPage = () => {
-
-  const [posts, setPosts] = useState<Post[]> ([]);
-
+  const [searchParams] = useSearchParams();
+  const page = Number(searchParams.get("page") || 1);
+  const {data:response, isLoading, isError, error} = useQuery<PostResponse>({
+    queryKey:['posts',page],
+    queryFn:()=>fetchPost(page),
+    placeholderData: (previousData) => previousData
+  });
   const navigate = useNavigate();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const posts = response?.posts ?? [];
+  const totalPages = response?.totalPages ?? 1;
 
   const toPrevPage = ()=>{
-    // navigate(`?`)
+    navigate(`/post?page=${page + 1}`);
   }
 
   const toNextPage = ()=>{
+    navigate(`/post?page=${page - 1}`);
+  }
 
+  const toSomePage = (page:number) => {
+    navigate(`/post?page=${page}`)
   }
 
   
@@ -39,32 +54,19 @@ const PostsPage = () => {
 
 
   //get posts from backend
-  useEffect( ()=>{
-    const fetchData = async () =>{
-      try{
-
-        const res = await api.get(`/post?page=${currentPage}`);
-        setPosts(res.data.postWithAuthor) ;
-        setCurrentPage(res.data.currentPage);
-        setTotalPages( res.data.totalPages);
-      }
-      catch(err){
-        console.log(err);
-      }
-
-    };
-
-    fetchData();
-
-  },[currentPage,totalPages]);
-
   //postDetail 
   const handleClickRow = (postId:number)=> {
     navigate(`/post/${postId}`)    
   }
 
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    return <div>{error instanceof Error ? error.message : 'Failed to load posts'}</div>;
+  }
 
-  return (
+
+  return ( 
+    
     <div className='relative w-full'>
     <div className='flex absolute inset-0 bg-white justify-center items-center'>
       <div className='w-4/5 flex flex-col gap-4'>
@@ -97,22 +99,23 @@ const PostsPage = () => {
       {/* Pagination */}
       <div className='relative'>
         <div className='flex absolute left-1/2 -translate-x-1/2 gap-2 text-xl'>
-          <button 
+          <button disabled={page===1}
             onClick={toPrevPage}
-            className={`flex items-center gap-1 ${currentPage!==1? 'text-black':'text-gray-500'}`}>
+            className={`flex items-center gap-1 ${page!==1? 'text-black':'text-gray-500'}`}>
               <FaChevronLeft/> prev
           </button>
-          {Array.from({length:totalPages - currentPage+1}, (_,i) => currentPage+i).map(
+          {Array.from({length:totalPages - page+1}, (_,i) => page+i).map(
             page => (
             <button key={page}
-            className={`text-base bg-white mx-1 ${page == currentPage ? 'text-black':'text-gray-500'}`}>
+            onClick={()=> toSomePage(page)}
+            className={`text-base bg-white mx-1 ${page == page ? 'text-black':'text-gray-500'}`}>
                 {page}
             </button>
             )
           )}
-          <button disabled={currentPage==1}
+          <button disabled={page===totalPages}
             onClick={toNextPage}
-            className={`flex items-center gap-1 ${totalPages === currentPage? 'text-gray-500': 'text-black'}`}>
+            className={`flex items-center gap-1 ${totalPages === page? 'text-gray-500': 'text-black'}`}>
             next<FaChevronRight/>
           </button>
         </div>
