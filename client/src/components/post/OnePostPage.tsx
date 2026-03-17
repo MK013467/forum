@@ -1,13 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@shared/lib/api';
-import  { useEffect, useState } from 'react'
+import  {  useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import z from 'zod';
+import {z} from 'zod';
 import { useAuth } from '../auth/AuthContext';
 import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useQuery , useMutation } from '@tanstack/react-query';
-import {useQuery} from '@tanstack/Query';
+import { useQuery , useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Post {
   id:number;
@@ -43,128 +42,92 @@ const createCommentFormSchema = z.object({
 
 type createCommentForm = z.infer<typeof createCommentFormSchema>;
 
-const fetchPost = async (postId:num)=>{
-  const response = await api.get('post/${postId}')
+const fetchPost = async (postId:number)=>{
+  const response = await api.get(`/post/${postId}`)
+  return response.data;
 };
 
 
 const OnePostPage = () => {
-
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { user } = useAuth();
-  console.log(user);
-  //for posts
-  const {postId = ""} = useParams();
-  const [post, setPost ]= useState<Post|null>(null);
- const{data:post,isLoading, isError, error} = useQuery<Post>({
+  const {postId} = useParams();
+  const{data:post,isLoading, isError, error} = useQuery<Post>({
      queryKey:['post',postId],
-     queryFn: (postId:num) =>fetchPost(postId)
+     queryFn: () =>fetchPost(Number(postId))
 })
 
-  //for comments 
-  const [comments, setComments ] = useState<Comment[]>([]);
-  const [actionError, setActionError] = useState('');
+    //for comments 
 
+  
+    const {register, handleSubmit, setError} = useForm<createCommentForm>({
+      resolver:zodResolver(createCommentFormSchema),
+      mode:'onChange'
+    })
 
-  const {register, handleSubmit, setError} = useForm<createCommentForm>({
-    resolver:zodResolver(createCommentFormSchema),
-    mode:'onChange'
-  })
-
-  const onCommentSubmit:SubmitHandler<createCommentForm> = async(data: any) => {
-    try{
-      const commentDto = {
-        ...data,
-        authorId : user?.id,
-        postId: postId
+    const createCommentMutation = useMutation({
+      mutationFn: async(data:createCommentForm) =>{
+        return await api.post('/commnet', data);
+      },
+      onSuccess:()=>{
+        queryClient.invalidateQueries({queryKey:['post', postId]})
       }
-      const response = await api.post('/comment',commentDto);
-      setComments(prev => [...prev, response.data]);
-      navigate('')
-    }
-    catch(err:any){
-      console.log(err.response?.data);
-    }
-  }
+    })
 
-  const handlePostLike = async (postId:number) =>{
-    try{
-      const data = {
-        targetId: postId,
-        type:'like'
+    const postLikeMutation = useMutation({
+      mutationFn: async({type}: {type:'like'|'dislike'} ) => {
+        return await api.post("/like/post", {
+          targetId: postId,
+          type:type
+        })
       }
-      setActionError('')
-      api.post("/like/post", data);
-      setActionError('');
-    }
-    catch(err:any ){
-      setActionError(err.response?.data?.message || 'Failed to like post');
-    }
-  }
-
-  const handlePostDislike = async (postId:number) =>{
-    try{
-      const data = {
-        targetId: postId,
-        type:'dislike'
+      ,
+      onSuccess: () =>{
+        queryClient.invalidateQueries()
       }
-      setActionError('');
-      api.post("/like/post", data);
-      
-    }
+    })
 
-    catch(err:any ){
-      setActionError(err.response?.data?.message || 'Failed to dislike post');
-    }
-  }
+    const commentLikeMutation = useMutation({
+      mutationFn: async({commentId, type}: {commentId:number ,type:'like'|'dislike'}) =>{
+        return await api.post("/like/comment", {
+          targetId: commentId,
+          type:type
+        })
+      },
 
+      onSuccess: () => {
 
-  const handleCommentLike = async (commentId:number) =>{
-    try{
-      const data = {
-        targetId: commentId,
-        type:'like'
       }
-      setActionError('')
-      api.post("/like/comment", data);
+    })
+    
+    const onCommentSubmit:SubmitHandler<createCommentForm> = async (data) => {
+      createCommentMutation.mutate(data);
     }
-    catch(err:any ){
-      setActionError(err.response?.data?.message || 'Failed to like comment');
-    }
-  }
 
-  const handleCommentDislike = async (commentId:number) =>{
-    try{
-      const data = {
-        targetId: commentId,
-        type:'dislike'
-      }
-      setActionError('')
-      api.post("/like/comment", data);
+    const handlePostLike = () => {
+      postLikeMutation.mutate({type:'like'});
     }
-    catch(err:any ){
-      setActionError(err.response?.data?.message || 'Failed to dislike comment');
 
+    const handlePostDislike = () => {
+      postLikeMutation.mutate({type:"dislike"});
     }
-  }
 
-
-  useEffect(()=>{
-    const fetchData = async(id:string) => {
-      if(!id) {
-        setPost(null);
-        return;
-      }
-      const res = await api.get(`/post/${id}`);
-      setPost(res.data);
-      setComments(res.data.comments)
+    const handleCommentLike = (commentId:number) => {
+      commentLikeMutation.mutate({commentId:commentId, type:'like'});
     }
-    if(postId){
-      fetchData(postId)
-    }
-  }, [])
 
-    if (!post) return <div>Loading...</div>;
+    const handleCommentDislike = (commentId:number) => {
+      commentLikeMutation.mutate({commentId:commentId, type:'dislike'});
+    }
+
+
+    if (!post) {
+      return <div>Post not found</div>;
+    }
+    const comments = post.comments;
+
+    if (isLoading) return <div>Loading...</div>;
     else{
     }
 
@@ -181,7 +144,7 @@ const OnePostPage = () => {
 
             <div className="flex items-center gap-2">
               <button disabled={!user}
-                onClick={() => handlePostLike(post.id)}
+                onClick={() => handlePostLike()}
                 className={`flex items-center gap-1 rounded-full px-2 py-2 text-gray-700 ${user? 'hover:bg-blue-50 hover:text-blue-700 transition':''}`}
               >
                 <ThumbsUp className="w-4 h-4" />
@@ -189,7 +152,7 @@ const OnePostPage = () => {
               </button>
 
               <button disabled={!user}
-                onClick={() => handlePostDislike(post.id)}
+                onClick={() => handlePostDislike()}
                 className={`flex items-center gap-1 rounded-full px-2 py-2 text-gray-700 ${user? ' hover:bg-rose-50 hover:text-rose-700 transition':''}`}
               >
                 <ThumbsDown className="w-4 h-4" />
@@ -217,7 +180,7 @@ const OnePostPage = () => {
               </button>
               }
               
-          </form>{comments.map((comment, index) =>
+          </form>{comments?.map((comment, index) =>
         <div key={index} className='flex flex-col gap-1 py-3 border-b border-gray-200'>
           <div className='flex items-center justify-between'>
             <span className='text-sm font-semibold text-gray-700'> {comment.author.username}</span>

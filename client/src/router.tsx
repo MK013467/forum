@@ -10,9 +10,11 @@ import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import CheckVerificationCodePage from "./components/auth/CheckVerificationCodePage";
 import NotFoundPage from "./components/error/NotFoundPage";
 import ProfilePage from "./components/auth/ProfilePage";
+import RootErrorPage from "./components/error/RootErrorPage";
 
 const router = createBrowserRouter([{
     element:<Layout/>,
+    errorElement:<RootErrorPage/>,
     children:[
         {   
             path:"/",   
@@ -65,12 +67,7 @@ const router = createBrowserRouter([{
         {
             path:"/post/:id/edit",
             element:<UpdatePostPAge/>
-        },
-        {
-            path:'*',
-            element:<NotFoundPage/>
         }
-       
     ]
 }])
 

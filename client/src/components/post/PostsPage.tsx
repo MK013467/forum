@@ -1,5 +1,4 @@
 import { api } from '@shared/lib/api'
-import {  useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaChevronLeft , FaChevronRight} from 'react-icons/fa6';
 import {  useQuery } from '@tanstack/react-query';
@@ -23,6 +22,7 @@ const fetchPost =  async (page:number) => {
 }
 
 const PostsPage = () => {
+
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
   const {data:response, isLoading, isError, error} = useQuery<PostResponse>({
@@ -66,7 +66,6 @@ const PostsPage = () => {
 
 
   return ( 
-    
     <div className='relative w-full'>
     <div className='flex absolute inset-0 bg-white justify-center items-center'>
       <div className='w-4/5 flex flex-col gap-4'>
