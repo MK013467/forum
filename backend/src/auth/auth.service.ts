@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserDto } from 'src/users/dtos/User.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from "bcrypt";
+import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +29,19 @@ export class AuthService {
         const user = await this.userService.findUserById(id);
         
         return user;
+    }
+
+    async createUser(dto:CreateUserDto){
+        try{
+
+            const user = await this.userService.createUser(dto);
+            return {msg:'User successfuly created'};
+
+        }
+
+        catch(err){
+            console.log(err)
+        }
     }
 
     

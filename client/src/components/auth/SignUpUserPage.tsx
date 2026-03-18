@@ -36,10 +36,9 @@ const SignUpUser = () => {
   });
 
   const onSubmit:SubmitHandler<userForm> = async (data) => {
-    console.log("FORM SUBMITTED"); // 👈 add this
 
     try{
-      const response = await api.post("/user/signup", data);
+      const response = await api.post("/auth/signup", data);
       console.log("Success:"+response.data);
       navigate("/")
     }

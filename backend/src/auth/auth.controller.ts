@@ -1,16 +1,26 @@
-import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards, ValidationPipe } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Request , Response } from "express";
 import { AuthenticatedGuard } from "./passport/AuthenticatedGuard";
 import { LocalAuthGuard } from "./passport/LocalAuthGuard";
 import { UsersService } from "src/users/users.service";
 import { SkipThrottle, Throttle } from "@nestjs/throttler";
+import { AuthService } from "./auth.service";
+import { CreateUserDto } from "src/users/dtos/CreateUser.dto";
 
 @Controller('auth')
 export class AuthController{
 
-
+    constructor(private readonly authService : AuthService){}
     
+    @Post('/signup')
+    async createUser(@Body(new ValidationPipe()) createUserDto:CreateUserDto){
+        
+        const user = await this.authService.createUser(createUserDto)
+        return user;
+    }
+
+   
     // 5 login attempts per minute
     @Throttle({ default: { ttl: 60000, limit: 5 } }) 
     @UseGuards(LocalAuthGuard)
@@ -29,6 +39,8 @@ export class AuthController{
             user: req.user,
         };
     }
+
+
     
     @SkipThrottle()
     @Post('logout')

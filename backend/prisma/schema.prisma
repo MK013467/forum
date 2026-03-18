@@ -7,79 +7,82 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id Int @default(autoincrement()) @id
-  username String @unique
-  email String @unique
-  password String
-  createsAt DateTime @default(now())
-  posts Post[]
-  comments Comment[]
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  email     String    @unique
+  password  String
+  createsAt DateTime  @default(now())
+  comments  Comment[]
+  posts     Post[]
 }
 
-model UserSetting{
-  id Int @default(autoincrement()) @id
+model UserSetting {
+  id           Int     @id @default(autoincrement())
   notification Boolean
-  snsEnabled Boolean
+  snsEnabled   Boolean
 }
 
+model Post {
+  id        Int       @id @default(autoincrement())
+  title     String    @db.VarChar(300)
+  content   String?   @db.VarChar(10000)
+  createsAt DateTime  @default(now())
+  views     Int       @default(0)
+  likes     Int       @default(0)
+  authorId  Int
+  comments  Comment[]
+  author    User      @relation(fields: [authorId], references: [id])
 
-
-model Post{
-  id Int @default(autoincrement()) @id
-  title String @db.VarChar(300)
-  content String? @db.VarChar(10000)
-  createsAt DateTime @default(now()) 
-  views Int @default(0)
-  likes Int @default(0)
-  comments Comment[]
-  author User  @relation(fields: [authorId], references: [id])
-  authorId Int
+  @@index([authorId], map: "Post_authorId_fkey")
 }
 
-model VerificationCode{
-  id Int @default(autoincrement()) @id
-  userId Int @unique
-  type String
-  code String
-  token String?
+model VerificationCode {
+  id         Int       @id @default(autoincrement())
+  userId     Int       @unique
+  type       String
+  code       String
+  token      String?
+  createsAt  DateTime  @default(now())
+  updatesAt  DateTime? @updatedAt
+  expiresAt  DateTime
+  requestNum Int       @default(1)
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String?  @db.VarChar(2000)
+  likes     Int      @default(0)
   createsAt DateTime @default(now())
-  updatesAt DateTime? @updatedAt()
-  expiresAt DateTime  
-  requestNum Int @default(1)
+  updatesAt DateTime @updatedAt
+  authorId  Int
+  postId    Int
+  author    User     @relation(fields: [authorId], references: [id])
+  ownerPost Post     @relation(fields: [postId], references: [id])
+
+  @@index([authorId], map: "Comment_authorId_fkey")
+  @@index([postId], map: "Comment_postId_fkey")
 }
 
-model Comment{
- id Int  @default(autoincrement()) @id
- content String? @db.VarChar(2000)
- likes Int @default(0)
- createsAt DateTime @default(now())
- updatesAt DateTime @updatedAt()
- authorId Int
- postId Int 
- author User @relation(fields: [authorId], references: [id])
- ownerPost Post @relation(fields: [postId], references: [id])
+model Post_Like {
+  id     Int       @id @default(autoincrement())
+  userId Int
+  postId Int
+  type   Like_Type
+
+  @@unique([postId, userId])
+}
+
+model Comment_Like {
+  id        Int       @id @default(autoincrement())
+  type      Like_Type
+  userId    Int
+  commentId Int
+
+  @@unique([userId, commentId])
 }
 
 enum Like_Type {
   like
   dislike
-}
-
-model Post_Like{
-  id Int @default(autoincrement()) @id 
-  // if type==post then this would be id of the post otherwise it would be the id of the comment
-  userId Int 
-  postId Int
-  @@unique([postId,userId])
-  type Like_Type
-}
-
-
-model Comment_Like{
-  id Int @default(autoincrement()) @id
-  userId Int
-  commentId Int 
-  type Like_Type
-  @@unique([userId,commentId]) 
 }

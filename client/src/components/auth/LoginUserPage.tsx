@@ -68,13 +68,13 @@ const LoginUserPage = () => {
         </button >
       </div>
       <p className='text-red-500'>{errors&& errors.root?.message as string}</p>
-      <Link to={'/user/signup'} className='text-indigo-500 text-sm'>Forgot a Password?</Link>
+      <Link to={'/auth/signup'} className='text-indigo-500 text-sm'>Forgot a Password?</Link>
       <button   disabled={!isValid || isSubmitting}
         type='submit'
         className={`w-full mt-2 rounded-2xl p-4 py-2 text-white text-l font-semibold 
         ${!isValid ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-500"}
         `}> {!isSubmitting? 'Login':'Submitting'}</button>
-    <p className="text-gray-500 text-sm mt-3 mb-11">Don’t have an account? <Link className="text-indigo-500" to={'/user/signup'}> Sign up </Link> </p>
+    <p className="text-gray-500 text-sm mt-3 mb-11">Don’t have an account? <Link className="text-indigo-500" to={'/auth/signup'}> Sign up </Link> </p>
     </form>
   )
 }
