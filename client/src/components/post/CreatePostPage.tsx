@@ -25,8 +25,6 @@ const CreatePostPage = () => {
   const onSubmit:SubmitHandler<createPostForm> = async (data) => {
     try{
       const response = await api.post("/post", data);
-      console.log(response.data);
-
       navigate('')
     } 
 

@@ -119,8 +119,27 @@ export class PostService {
             },
             data:updatepostdto
         })
+    }
 
+    async deletePost(id:number , userId:number){
+        const post = await this.prisma.post.findUnique({
+            where:{
+                id:id
+            },
+        })
+        if(!post) throw new Error("post not found");
 
+        if(post.authorId !== userId){
+            throw new ForbiddenException('You cannot edit this post');
+        }
+
+        const result = await this.prisma.post.delete({
+            where:{
+                id:id
+            }
+        })
+
+        return result;
 
     }
     

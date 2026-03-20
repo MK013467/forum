@@ -100,6 +100,10 @@ const OnePostPage = () => {
       }
     })
     
+    const handlePostDelete = () => {
+
+    }
+
     const onCommentSubmit:SubmitHandler<createCommentForm> = async (data) => {
       createCommentMutation.mutate(data);
     }
@@ -132,12 +136,12 @@ const OnePostPage = () => {
     
 
       return(
-        <div className="w-full min-h-screen md:px-80 p-4 text-base ">
-          <div className='flex items-center grow-0 justify-between mb-6 border-b border-gray-200 pb-4'>
+        <div className="w-full min-h-screen overflow-hidden px-3 md:px-20 lg:px-80 text-base">
+          <div className='flex items-center justify-between border-b border-gray-200 my-6 lg:my-0 lg:mb-4 pb-4'>
             <span className='font-bold text-2xl md:text-3xl tracking-tight'>{post.title}</span>
             <span className='text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full'>{post.createsAt.substring(0,10)}</span>
           </div>
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2 text-sm md:gap3">
           <div className="flex items-center rounded-full bg-sky-50 px-4 py-2 font-semibold text-sky-700">
             <span>views {post.views}</span>
           </div>
@@ -166,7 +170,7 @@ const OnePostPage = () => {
             </div>
           </div>
           <div className='py-4'>
-              <p className='px-2'> {post.content}</p>
+              <p className='px-2 break-words'> {post.content}</p>
           </div>
           <form onSubmit={handleSubmit(onCommentSubmit)}
           className='flex flex-col gap-2 mt-4'>
@@ -186,7 +190,7 @@ const OnePostPage = () => {
             <span className='text-sm font-semibold text-gray-700'> {comment.author.username}</span>
             <span className='text-xs text-gray-400'>{comment.createsAt.substring(0, 10)}</span>
           </div> 
-          <p className='text-gray-600 text-sm'>{comment.content}</p>
+          <p className='text-gray-600 text-sm break-words'>{comment.content}</p>
           <div className='flex items-center gap-1 text-xs text-gray-400'>
             <div className='flex flex-1 mt-2'> 
               <button disabled={!user}
