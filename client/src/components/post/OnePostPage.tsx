@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@shared/lib/api';
-import  {  useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import {z} from 'zod';
@@ -122,19 +121,20 @@ const OnePostPage = () => {
     }
 
 
-    if (!post) {
-      return <div>Post not found</div>;
-    }
-    const comments = post.comments;
 
     if (isLoading) return <div>Loading...</div>;
     else{
-    }
+
+      if (!post) {
+        return <div>Post not found</div>;
+      }
+      const comments = post.comments;
+    
 
       return(
-        <div className="w-full min-h-screen px-80 p-4 text-base ">
-          <div className='flex items-center justify-between mb-6 border-b border-gray-200 pb-4'>
-            <span className='font-bold text-3xl tracking-tight'>{post.title}</span>
+        <div className="w-full min-h-screen md:px-80 p-4 text-base ">
+          <div className='flex items-center grow-0 justify-between mb-6 border-b border-gray-200 pb-4'>
+            <span className='font-bold text-2xl md:text-3xl tracking-tight'>{post.title}</span>
             <span className='text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full'>{post.createsAt.substring(0,10)}</span>
           </div>
           <div className="flex items-center gap-3 text-sm">
@@ -212,7 +212,7 @@ const OnePostPage = () => {
         )}
         
         </div>
-      )
+      )}
 }
     
 export default OnePostPage

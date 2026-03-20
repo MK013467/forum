@@ -31,7 +31,7 @@ const SignUpUser = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { register , handleSubmit, formState: {errors} } = useForm<userForm>({
+  const { register , handleSubmit, formState: {errors, isValid} } = useForm<userForm>({
     resolver: zodResolver(SignUpUserFormSchema)
   });
 
@@ -77,13 +77,14 @@ const SignUpUser = () => {
         )}
        
        <button type="button" 
+          disabled={!isValid}
           onClick={() => setShowPassword(prev => !prev)}
           className="aspect-square
           absolute right-4 top-1/2 -translate-y-1/2"> 
             {showPassword? <GoEyeClosed/>: <GoEye/> }
         </button >
       </div>
-      <button type='submit' className='w-full mt-2 bg-indigo-500 rounded-2xl p-4 py-4 text-white text-l font-semibold' > Sign Up</button>
+      <button type='submit' className={`w-full mt-2 ${!isValid ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-500"}  rounded-2xl p-4 py-4 text-white text-l font-semibold`} > Sign Up</button>
 
     </form>
   )
