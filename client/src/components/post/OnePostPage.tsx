@@ -7,6 +7,7 @@ import { useAuth } from '../auth/AuthContext';
 import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useQuery , useMutation, useQueryClient } from '@tanstack/react-query';
 
+// post interface
 interface Post {
   id:number;
   title:string
