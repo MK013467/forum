@@ -75,6 +75,20 @@ const OnePostPage = () => {
       }
     })
 
+    const deletePostMutation = useMutation({
+      mutationFn: async () => {
+        return await api.delete(`/post/${postId}`);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['posts'] });
+        navigate('/post?page=1');
+      },
+      onError: (err: any) => {
+        console.log(err.response?.data || err.message);
+        alert('Failed to delete post');
+      },
+    });
+
     const postLikeMutation = useMutation({
       mutationFn: async({type}: {type:'like'|'dislike'} ) => {
         return await api.post("/like/post", {
@@ -101,12 +115,13 @@ const OnePostPage = () => {
       }
     })
     
-    const handlePostDelete = () => {
-
-    }
 
     const onCommentSubmit:SubmitHandler<createCommentForm> = async (data) => {
       createCommentMutation.mutate(data);
+    }
+
+    const handlePostDelete = () => {
+      deletePostMutation.mutate();
     }
 
     const handlePostLike = () => {
@@ -141,6 +156,18 @@ const OnePostPage = () => {
           <div className='flex items-center justify-between border-b border-gray-200 my-6 lg:my-0 lg:mb-4 pb-4'>
             <span className='font-bold text-2xl md:text-3xl tracking-tight'>{post.title}</span>
             <span className='text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full'>{post.createsAt.substring(0,10)}</span>
+            {user?.id === post.authorId && (
+              <>
+                <button className='text-sm text-gray-500 hover:text-orange-400 transition'>
+                  Edit
+                </button>
+                <button
+                  onClick={handlePostDelete}
+                  className='text-sm text-gray-500 hover:text-red-500 transition'>
+                  Delete
+                </button>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-2 text-sm md:gap3">
           <div className="flex items-center rounded-full bg-sky-50 px-4 py-2 font-semibold text-sky-700">
@@ -170,13 +197,16 @@ const OnePostPage = () => {
               <span>{post.comments.length}</span>
             </div>
           </div>
-          <div className='py-4'>
-              <p className='px-2 break-words'> {post.content}</p>
+          <div className='flex py-4'>
+             
+                <p className='px-2 break-words'> {post.content}</p>
+              
+              
           </div>
           <form onSubmit={handleSubmit(onCommentSubmit)}
           className='flex flex-col gap-2 mt-4'>
               {user && <textarea {...register('content')} placeholder='Text'
-              className='w-full min-h-32 border rounded-xl p-4'/>}
+              className='w-full min-h-20 md:min-h-30 border rounded-xl p-2'/>}
 
               {user && 
               <button 
@@ -215,7 +245,6 @@ const OnePostPage = () => {
           
         </div>
         )}
-        
         </div>
       )}
 }
