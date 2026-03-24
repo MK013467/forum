@@ -1,14 +1,20 @@
+# Forum App
+A Reddit-like social media applicadtion built with React and for Frontend and separate backend in NestJS.
+CSS work was done in TailwindCSS include a responsive design. Built for personal project displaying my skill as a full stack developer with understanding of industry standard.
+
 ## Tech Stack
-- Frontend: React, Tailwind CSS
+- TypeScript
+- Frontend: React, React-Query, Tailwind CSS
 - Backend: NestJS, Prisma
-- Database: PostgreSQL (Railway)
+- Database: MYSQL (Railway)
 - Auth: Session-based authentication
 
 ## Features
-- User registration & login
-- Create / edit / delete posts
+- Secured User registration login
+- CRUD posts
 - Comment system
-- Protected routes
+- Protected routes for Authenticated User
+- Nice Error handling Page
 
 ## Getting Started
 npm install

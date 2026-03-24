@@ -47,7 +47,6 @@ export class LikeService {
                     })
                 ])
 
-                console.log(result);
                 return result;
             }
         
@@ -79,7 +78,6 @@ export class LikeService {
                     })
                 ]);
 
-                console.log(result);
                 return result;
             }    
         }
@@ -105,7 +103,6 @@ export class LikeService {
                     })
                 ])
 
-                console.log(result);
                 return result;
             }
 
@@ -131,7 +128,6 @@ export class LikeService {
                     })
                 ]);
 
-                console.log(result);
                 return result;
             }
         }
@@ -173,7 +169,6 @@ export class LikeService {
                     })
                 ])
 
-                console.log(result);
                 return result;
             }
         
@@ -199,7 +194,6 @@ export class LikeService {
                     })
                 ]);
 
-                console.log(result);
                 return result;
             }    
         }
@@ -225,7 +219,6 @@ export class LikeService {
                     })
                 ])
 
-                console.log(result);
                 return result;
             }
 
@@ -251,7 +244,6 @@ export class LikeService {
                     })
                 ]);
 
-                console.log(result);
                 return result;
             }
         }

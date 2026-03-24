@@ -2,10 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@shared/lib/api';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import {z} from 'zod';
+import { z} from 'zod';
 import { useAuth } from '../auth/AuthContext';
 import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useQuery , useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 // post interface
 interface Post {
@@ -33,7 +34,12 @@ interface Comment{
     username:string
   }
 }
+const updatePostFormSchema = z.object( {
+  title: z.string().min(1, 'title is required'),
+  content: z.string()
+})
 
+type updatePostForm = z.infer<typeof updatePostFormSchema>
 
 
 const createCommentFormSchema = z.object({
@@ -53,6 +59,9 @@ const OnePostPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const {postId} = useParams();
+  const [isEditing , setIsEditing] = useState<boolean>(false);
+
+
   const{data:post,isLoading, isError, error} = useQuery<Post>({
      queryKey:['post',postId],
      queryFn: () =>fetchPost(Number(postId))
@@ -61,6 +70,17 @@ const OnePostPage = () => {
     //for comments 
 
   
+    const {register:updateRegister, handleSubmit:handleUpdateSubmit} = useForm<updatePostForm>({
+        defaultValues: {
+          title: post?.title,
+          content: post?.content
+        },
+        resolver:zodResolver(updatePostFormSchema),
+        mode:'onChange'
+      });
+
+   
+
     const {register, handleSubmit, setError} = useForm<createCommentForm>({
       resolver:zodResolver(createCommentFormSchema),
       mode:'onChange'
@@ -68,10 +88,28 @@ const OnePostPage = () => {
 
     const createCommentMutation = useMutation({
       mutationFn: async(data:createCommentForm) =>{
-        return await api.post('/commnet', data);
+        return await api.post('/comment', data);
       },
       onSuccess:()=>{
         queryClient.invalidateQueries({queryKey:['post', postId]})
+      }
+    })
+
+    const updatePostMutation = useMutation({
+      mutationFn: async () => {
+        
+        const data = {
+          title: document.getElementById('post-title'),
+          content: document.getElementById('post-content')
+        }
+        return await api.patch(`/post/${postId}`, data);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries( {queryKey:['post','postId']});
+        navigate("/");
+      },
+      onError: (err:any) => {
+        console.log(err.response?.data);
       }
     })
 
@@ -85,7 +123,6 @@ const OnePostPage = () => {
       },
       onError: (err: any) => {
         console.log(err.response?.data || err.message);
-        alert('Failed to delete post');
       },
     });
 
@@ -97,8 +134,34 @@ const OnePostPage = () => {
         })
       }
       ,
-      onSuccess: () =>{
-        queryClient.invalidateQueries()
+
+      // The value returned from this function will be passed to the onSuccess, onError, and onSettled functions and can be useful for rolling back optimistic updates.
+      onMutate: async({type}) =>{
+        
+        await queryClient.cancelQueries({queryKey:['post', postId]});
+        const previousPost = queryClient.getQueryData(['post', postId]);
+
+        //Update UI
+        queryClient.setQueryData(['post', postId], (old:Post) => ({
+          ...old,
+          likes: type === 'like' ? old.likes+1 : old.likes-1
+        }))
+        return {previousPost}
+      },
+
+
+
+      onSuccess: () => {
+        queryClient.invalidateQueries({queryKey:['post' , postId]})
+      },
+
+      onError: ( err, variable, context) =>{
+        queryClient.setQueryData(['post', postId], context?.previousPost);
+      },
+
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ['post', postId] });
+
       }
     })
 
@@ -108,9 +171,27 @@ const OnePostPage = () => {
           targetId: commentId,
           type:type
         })
+
+      },
+
+      onMutate: async (   ) => {
+          await queryClient.cancelQueries({queryKey:['post', postId]});
+          const previousPost = queryClient.getQueryData(['post', postId]);
+          // const previousComments = previousPost?.comments?
+
+          return {previousPost}
       },
 
       onSuccess: () => {
+        queryClient.invalidateQueries({queryKey:['post', postId]})
+      
+      },
+
+      onError: (err, variable, context) => {
+        queryClient.setQueryData(['post', postId] , context?.previousPost)
+      },
+
+      onSettled: () => {
 
       }
     })
@@ -118,6 +199,10 @@ const OnePostPage = () => {
 
     const onCommentSubmit:SubmitHandler<createCommentForm> = async (data) => {
       createCommentMutation.mutate(data);
+    }
+
+    const handlePostEdit = () => {
+      updatePostMutation.mutate();
     }
 
     const handlePostDelete = () => {
@@ -140,9 +225,9 @@ const OnePostPage = () => {
       commentLikeMutation.mutate({commentId:commentId, type:'dislike'});
     }
 
-
-
+    if(isError) return <div> Something went wrong {error.message}</div>
     if (isLoading) return <div>Loading...</div>;
+
     else{
 
       if (!post) {
@@ -150,25 +235,48 @@ const OnePostPage = () => {
       }
       const comments = post.comments;
     
-
-      return(
+    
+      return( 
         <div className="w-full min-h-screen overflow-hidden px-3 md:px-20 lg:px-80 text-base">
-          <div className='flex items-center justify-between border-b border-gray-200 my-6 lg:my-0 lg:mb-4 pb-4'>
-            <span className='font-bold text-2xl md:text-3xl tracking-tight'>{post.title}</span>
-            <span className='text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full'>{post.createsAt.substring(0,10)}</span>
+          <div className='flex flex-col gap-3 border-b border-gray-100 pb-5 mb-6'>
+          <div className='flex items-center justify-between'>
+            <span className='text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-100'>
+              {post.createsAt.substring(0, 10)}
+            </span>
+
             {user?.id === post.authorId && (
-              <>
-                <button className='text-sm text-gray-500 hover:text-orange-400 transition'>
+              <div className='flex items-center gap-2'>
+                <button 
+                className='text-xs font-medium text-orange-500 border border-orange-200 bg-orange-50 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors'
+                onClick={() => setIsEditing(!isEditing)}
+                >
                   Edit
                 </button>
                 <button
                   onClick={handlePostDelete}
-                  className='text-sm text-gray-500 hover:text-red-500 transition'>
+                  className='text-xs font-medium text-red-500 border border-red-200 bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors'>
                   Delete
                 </button>
-              </>
+              </div>
             )}
           </div>
+          
+          {/* title */}
+          {isEditing ? (
+          <input
+            {...updateRegister('title')}
+            className='w-full border rounded-lg p-2 text-2xl font-bold tracking-tight'
+          />
+        ) : (
+          <h1 className='font-bold text-2xl md:text-3xl tracking-tight text-gray-900 leading-snug'>
+            {post.title}
+          </h1>
+        )}
+         
+
+          
+          
+        </div>
           <div className="flex items-center gap-2 text-sm md:gap3">
           <div className="flex items-center rounded-full bg-sky-50 px-4 py-2 font-semibold text-sky-700">
             <span>views {post.views}</span>
@@ -199,10 +307,30 @@ const OnePostPage = () => {
           </div>
           <div className='flex py-4'>
              
-                <p className='px-2 break-words'> {post.content}</p>
-              
+       
+          {isEditing ? (
+            <form onSubmit={handleUpdateSubmit(handlePostEdit)} className='flex flex-col gap-2 py-4'>
+              <textarea
+                {...updateRegister('content')}
+                className='w-full min-h-40 border rounded-xl p-2'
+              />
+              <button
+                type='submit'
+                className='self-end text-xs bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-400 transition-colors'>
+                Save
+              </button>
+            </form>
+          ) : (
+            <div className='flex py-4'>
+              <p className='px-2 break-words'>{post.content}</p>
+            </div>
+          )}
               
           </div>
+
+          {/* for comment */}
+
+          {/*createComentForm */}
           <form onSubmit={handleSubmit(onCommentSubmit)}
           className='flex flex-col gap-2 mt-4'>
               {user && <textarea {...register('content')} placeholder='Text'
@@ -215,7 +343,9 @@ const OnePostPage = () => {
               </button>
               }
               
-          </form>{comments?.map((comment, index) =>
+          </form>
+        
+        {comments?.map((comment, index) =>
         <div key={index} className='flex flex-col gap-1 py-3 border-b border-gray-200'>
           <div className='flex items-center justify-between'>
             <span className='text-sm font-semibold text-gray-700'> {comment.author.username}</span>
