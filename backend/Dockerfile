@@ -1,9 +1,14 @@
-FROM node:23
+FROM node:22-slim
 
-WORKDIR ./src
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
 
 COPY . .
 
-RUN npm install
+RUN npx prisma generate && npm run build
 
-CMD ["npm", "run", "start"]
+EXPOSE 3000
+
+CMD ["node", "dist"]
