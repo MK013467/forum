@@ -14,7 +14,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app/app.controller';
-import { AppController } from './app/app.controller';
 
 @Module({
   imports: [ 
