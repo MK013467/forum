@@ -88,30 +88,26 @@ const OnePostPage = () => {
 
     const createCommentMutation = useMutation({
       mutationFn: async(data:createCommentForm) =>{
-        return await api.post('/comment', data);
+        return await api.post('/comment', {...data, authorId:post?.authorId, postId:post?.id });
       },
+
       onSuccess:()=>{
         queryClient.invalidateQueries({queryKey:['post', postId]})
+      },
+
+      onError:()=> {
+
       }
     })
-
     const updatePostMutation = useMutation({
-      mutationFn: async () => {
-        
-        const data = {
-          title: document.getElementById('post-title'),
-          content: document.getElementById('post-content')
-        }
+      mutationFn: async (data: updatePostForm) => {
         return await api.patch(`/post/${postId}`, data);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries( {queryKey:['post','postId']});
-        navigate("/");
-      },
-      onError: (err:any) => {
-        console.log(err.response?.data);
+        queryClient.invalidateQueries({ queryKey: ['post', postId] }); // 'postId' 문자열 아니고 변수
+        setIsEditing(false); // navigate('/') 말고 이걸로
       }
-    })
+    });
 
     const deletePostMutation = useMutation({
       mutationFn: async () => {
@@ -201,8 +197,8 @@ const OnePostPage = () => {
       createCommentMutation.mutate(data);
     }
 
-    const handlePostEdit = () => {
-      updatePostMutation.mutate();
+    const handlePostUpdate: SubmitHandler<updatePostForm> = (data) => {
+      updatePostMutation.mutate(data);
     }
 
     const handlePostDelete = () => {
@@ -309,7 +305,7 @@ const OnePostPage = () => {
              
        
           {isEditing ? (
-            <form onSubmit={handleUpdateSubmit(handlePostEdit)} className='flex flex-col gap-2 py-4'>
+            <form onSubmit={handleUpdateSubmit(handlePostUpdate)} className='flex flex-col gap-2 py-4'>
               <textarea
                 {...updateRegister('content')}
                 className='w-full min-h-40 border rounded-xl p-2'

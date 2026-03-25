@@ -10,17 +10,31 @@ import { CommentModule } from './comment/comment.module';
 import { AccountModule } from './account/account.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LikeModule } from './like/like.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+import { AppController } from './app/app.controller';
+import { AppController } from './app/app.controller';
 
 @Module({
-  imports: [ ThrottlerModule.forRoot([
+  imports: [ 
+    ConfigModule.forRoot(),
+    CacheModule.register({
+      max:100, 
+      // 1h
+      ttl:60*60*1000,
+      isGlobal:true
+    }),
+    ThrottlerModule.forRoot([
     {
       ttl: 60_000,
       limit: 60,
-    },
-  ]),UsersModule, PrismaModule, AuthModule, ServeStaticModule.forRoot({
+    },]),
+    PassportModule.register({ session: true }),
+    UsersModule, PrismaModule, AuthModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'client', 'dist'),
   }), PostModule, S3Module, CommentModule,  AccountModule, LikeModule],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

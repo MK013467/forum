@@ -41,19 +41,25 @@ export class AuthController{
     }
 
 
-    
     @SkipThrottle()
     @Post('logout')
-    async logOut(@Req() req:Request , @Res() res:Response){
-          //Terminate Passport session
+    async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+      await new Promise<void>((resolve, reject) => {
         req.logout((err: any) => {
-                if (err) throw new Error('Logout failed');
-            });
-
-
-        // Clear the cookie
-        res.clearCookie('connect.sid'); // 'connect.sid' is default
-        res.status(200).json({ message: 'user logged out.' });
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+    
+      await new Promise<void>((resolve, reject) => {
+        req.session.destroy((err: any) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+    
+      res.clearCookie('sid');
+      return { message: 'user logged out.' };
     }
 
 

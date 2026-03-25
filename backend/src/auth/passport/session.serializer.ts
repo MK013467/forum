@@ -6,7 +6,7 @@ import { LoginUserdto } from "src/users/dtos/LoginUser.dto";
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer{
-    constructor(private authService: AuthService){
+    constructor(private readonly authService: AuthService){
         super();
     }
     serializeUser(user: LoginUserdto, done: Function) {
@@ -23,7 +23,11 @@ export class SessionSerializer extends PassportSerializer{
         return done(new Error('User not found'), null);
       }
   
-      done(null, user);
+      done(null, {
+        id:user.id,
+        email: user.email,
+        username: user.username
+      });
     }
 
 }
