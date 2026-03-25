@@ -1,19 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {  ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import helmet from 'helmet';
 import { createClient } from "redis";
 import { RedisStore } from 'connect-redis';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
-export function setUpSession(app: INestApplication): void{
+export async function setUpSession(app: NestExpressApplication){
   const configService = app.get<ConfigService>(ConfigService);
-  const redisClient = createClient();
-  redisClient.connect().catch(console.error);
+  const redisClient = createClient({
+    url:configService.get("REDIS_URL")
+  });
 
-  let redisStore = new RedisStore({
+  redisClient.on('error', (err) => {
+    console.error('Redis Client Error', err);
+  });
+  
+  await redisClient.connect();
+    let redisStore = new RedisStore({
     client: redisClient,
     prefix: "myapp:",
     ttl:60*60
@@ -40,8 +47,9 @@ export function setUpSession(app: INestApplication): void{
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  setUpSession(app);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  await setUpSession(app);
+  app.set('trust proxy', true);
   app.use(helmet());
   app.useGlobalPipes(
     new ValidationPipe({
