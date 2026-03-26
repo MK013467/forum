@@ -18,6 +18,7 @@ interface AuthContextType{
 const AuthContext = createContext<AuthContextType | null > (null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+//useEffect then backend fetch is required
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
   
