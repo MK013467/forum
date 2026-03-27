@@ -4,7 +4,6 @@ import OnePostPage from "./components/post/OnePostPage";
 import CreatePostPage from "./components/post/CreatePostPage";
 import LoginUserPage from "./components/auth/LoginUserPage";
 import SignUpUser from "./components/auth/SignUpUserPage";
-import UpdatePostPAge from "./components/post/UpdatePostPage";
 import { Layout } from "./components/Layout";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import CheckVerificationCodePage from "./components/auth/CheckVerificationCodePage";
@@ -64,10 +63,6 @@ const router = createBrowserRouter([{
             path:"/post/new",
             element:<CreatePostPage/>
         },
-        {
-            path:"/post/:id/edit",
-            element:<UpdatePostPAge/>
-        }
     ],
    
 },

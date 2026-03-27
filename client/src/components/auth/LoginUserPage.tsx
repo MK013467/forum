@@ -7,6 +7,7 @@ import { api } from '@shared/lib/api';
 import { GoEye } from 'react-icons/go';
 import { GoEyeClosed } from "react-icons/go";
 import { useAuth } from './AuthContext';
+import {toast} from 'react-toastify';
 
 const LoginFormSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -33,20 +34,27 @@ const LoginUserPage = () => {
   const onSubmit:SubmitHandler<LoginForm> = async (data) => {
     try{
       const response = await api.post("/auth/login", data);
-      console.log(response.data);
       setUser(response.data.user);
+      toast.success("Login Successfully!",{
+        position:"bottom-center",
+        autoClose:2000,
+        hideProgressBar:true
+      })
       navigate('/');
     }
 
     catch(error:any){
-      console.log("LOGIN ERROR:", error);
-
       setError("root", {
         type: "server",
         message:
           error.response?.data?.message ||
-          "username or id is incorrect",
+          "Invalid username or password does not match",
       });
+      toast.error("Invalid username or password does not match",{
+        position:"bottom-center",
+        autoClose:2000,
+        hideProgressBar:true
+      })
     }   
   }
   

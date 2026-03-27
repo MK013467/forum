@@ -2,6 +2,8 @@ import { api } from '@shared/lib/api'
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
+import { CiSearch } from "react-icons/ci";
+import { useState } from 'react';
 
 interface Post {
   id: number;
@@ -19,8 +21,14 @@ interface PostResponse {
   currentPage: number;
 }
 
-const fetchPost = async (page: number) => {
-  const result = await api.get(`/post?page=${page}`);
+interface PostRequest {
+  page:number;
+  searchBy?:string
+  searchField?:string
+}
+
+const fetchPost = async ({page, searchBy, searchField}: PostRequest) => {
+  const result = await api.get(`/post?page=${page}&searchBy=${searchBy}&searchField=${searchField}`);
   return result.data;
 };
 
@@ -28,7 +36,7 @@ const formatDate = (date: string) => {
   return date.substring(5, 10).replaceAll('-', '.');
 };
 
-// ── Mobile feed item ─────────────────────────────────────────────────────────
+//Mobile item
 
 const PostFeedItem = ({ post, onClick }: { post: Post; onClick: () => void }) => (
   <div
@@ -43,14 +51,14 @@ const PostFeedItem = ({ post, onClick }: { post: Post; onClick: () => void }) =>
         {formatDate(post.createsAt)} · {post.authorName}
       </span>
       <div className="flex items-center gap-2 text-xs text-gray-400">
-        <span>조회 {post.views}</span>
-        <span>추천 <strong className="text-red-500">{post.likes}</strong></span>
+        <span>views {post.views}</span>
+        <span>likes <strong className="text-red-500">{post.likes}</strong></span>
       </div>
     </div>
   </div>
 );
 
-// ── Shared pagination ────────────────────────────────────────────────────────
+//Shared pagination
 
 const Pagination = ({
   page,
@@ -102,16 +110,19 @@ const Pagination = ({
   </div>
 );
 
-// ── Main page ────────────────────────────────────────────────────────────────
-
 const PostsPage = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams 추가
   const page = Number(searchParams.get('page') || 1);
+  const searchBy = searchParams.get('searchBy') || '';   
+  const searchField = searchParams.get('searchField') || '';  
+  const [localSearchBy, setLocalSearchBy] = useState(searchBy);
+  const [localSearchField, setLocalSearchField] = useState(searchField);
+
   const navigate = useNavigate();
 
-  const { data: response, isLoading, isError, error } = useQuery<PostResponse>({
+  const { data: response, isLoading, isError, error, refetch} = useQuery<PostResponse>({
     queryKey: ['posts', page],
-    queryFn: () => fetchPost(page),
+    queryFn: () => fetchPost({page,searchBy,searchField}),
     placeholderData: (previousData) => previousData,
   });
 
@@ -122,6 +133,19 @@ const PostsPage = () => {
   const toNextPage = () => navigate(`/post?page=${page + 1}`);
   const toSomePage = (p: number) => navigate(`/post?page=${p}`);
   const handleClickRow = (postId: number) => navigate(`/post/${postId}`);
+
+  const handleSearch = () => {
+    setSearchParams({
+      page: '1',
+      searchBy: localSearchBy,
+      searchField: localSearchField,
+    });
+  };
+
+  // Enter 키 지원
+  const handleEnterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') handleSearch();
+  };
 
   if (isLoading) return <div className="flex justify-center items-center min-h-screen text-gray-400">Loading...</div>;
   if (isError) return <div className="flex justify-center items-center min-h-screen text-red-400">{error instanceof Error ? error.message : 'Failed to load posts'}</div>;
@@ -146,11 +170,11 @@ const PostsPage = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b-2 border-gray-100 bg-gray-100">
-                  <th className="py-4 px-5 text-black font-medium">Title</th>
-                  <th className="py-4 px-5 text-black font-medium">Author</th>
-                  <th className="py-4 px-5 text-black font-medium">Posted At</th>
-                  <th className="py-4 px-5 text-black font-medium">Views</th>
-                  <th className="py-4 px-5 text-black font-medium">Likes</th>
+                  <th className="py-2 px-5 text-black font-medium">Title</th>
+                  <th className="py-2 px-5 text-black font-medium">Author</th>
+                  <th className="py-2 px-5 text-black font-medium">Posted At</th>
+                  <th className="py-2 px-5 text-black font-medium">Views</th>
+                  <th className="py-2 px-5 text-black font-medium">Likes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -160,21 +184,39 @@ const PostsPage = () => {
                     onClick={() => handleClickRow(post.id)}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                   >
-                    <td className="py-3 px-5 text-gray-900 w-1/2">
+                    <td className="py-2 px-5 text-gray-900 w-1/2">
                       {post.title.length < 50 ? post.title : post.title.substring(0, 50) + '...'}
                     </td>
-                    <td className="py-3 px-5 text-gray-600">{post.authorName}</td>
-                    <td className="py-3 px-5 text-gray-600">{formatDate(post.createsAt)}</td>
-                    <td className="py-3 px-5 text-gray-600">{post.views}</td>
-                    <td className="py-3 px-5 text-gray-600">{post.likes}</td>
+                    <td className="py-1 px-5 text-sm text-gray-600">{post.authorName}</td>
+                    <td className="py-1 px-5 text-sm text-gray-600">{formatDate(post.createsAt)}</td>
+                    <td className="py-1 px-5 text-sm text-gray-600">{post.views}</td>
+                    <td className="py-1 px-5 text-sm text-gray-600">{post.likes}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <div className='flex justify-center items-center'>
+            <select 
+              name="searchBy"
+              className='pr-2'>
+            <option value="title">title</option>
+            <option value="content">content</option>
+            <option value="username">username</option>
+            </select>
+
+            <input 
+              className=''/>
+              <button type='button'
+                onClick={()=> refetch({ variables: { page: 1 } })}
+                >
+                <CiSearch/>
+              </button>
+          </div>
           <Pagination {...paginationProps} />
         </div>
       </div>
+   
 
     </div>
   );
