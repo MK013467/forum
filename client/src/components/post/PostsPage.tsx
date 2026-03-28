@@ -4,6 +4,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
 import { CiSearch } from "react-icons/ci";
 import { useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
 
 interface Post {
   id: number;
@@ -28,7 +29,7 @@ interface PostRequest {
 }
 
 const fetchPost = async ({page, searchBy, searchField}: PostRequest) => {
-  const result = await api.get(`/post?page=${page}&searchBy=${searchBy}&searchField=${searchField}`);
+  const result = await api.get(`/post?page=${page}`);
   return result.data;
 };
 
@@ -128,10 +129,13 @@ const PostsPage = () => {
 
   const posts = response?.posts ?? [];
   const totalPages = response?.totalPages ?? 1;
+  const toPrevPage = () =>
+  setSearchParams({ page: String(page - 1), searchBy, searchField });
+const toNextPage = () =>
+  setSearchParams({ page: String(page + 1), searchBy, searchField });
+const toSomePage = (p: number) =>
+  setSearchParams({ page: String(p), searchBy, searchField });
 
-  const toPrevPage = () => navigate(`/post?page=${page - 1}`);
-  const toNextPage = () => navigate(`/post?page=${page + 1}`);
-  const toSomePage = (p: number) => navigate(`/post?page=${p}`);
   const handleClickRow = (postId: number) => navigate(`/post/${postId}`);
 
   const handleSearch = () => {
@@ -208,7 +212,7 @@ const PostsPage = () => {
             <input 
               className=''/>
               <button type='button'
-                onClick={()=> refetch({ variables: { page: 1 } })}
+                onClick={()=> refetch()}
                 >
                 <CiSearch/>
               </button>

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaUserLarge } from "react-icons/fa6";
 import {api} from "@shared/lib/api";
@@ -8,17 +7,6 @@ const Headers = () => {
   const {user, setUser} = useAuth();
   const naviagate = useNavigate();
   const isAuthenticated = user!= null;
-
-  const handleSignUp = async (data:any) => {
-    try{
-      const response = await api.post("auth/signup", data);
-    }
-    
-    catch(err:any){
-      console.log(err.response?.err);
-
-    }
-  }
 
   const handleLogout = async () => {
     try{

@@ -1,4 +1,5 @@
-import { createContext, useContext } from "react";
+import { api } from "@shared/lib/api";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type User = {
   id: number;
@@ -14,7 +15,45 @@ export type AuthContextType = {
   logout: () => Promise<void>;
 };
 
+type propType = {
+  children: React.ReactNode
+}
+
 export const AuthContext = createContext<AuthContextType | null>({} as AuthContextType);
+export const AuthProvider = ({ children }: propType) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refreshUser = async () => {
+    try {
+      const res = await api.get("/auth/profile");
+      setUser(res.data);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    refreshUser(); 
+  }, []);
+
+  return ( 
+    <AuthContext.Provider value={{ user , setUser, loading,  refreshUser, logout}} >
+      {children}
+    </AuthContext.Provider>
+  )
+
+}
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

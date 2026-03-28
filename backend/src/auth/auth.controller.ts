@@ -63,7 +63,7 @@ export class AuthController{
     }
 
 
-    @UseGuards(AuthenticatedGuard)
+    // @UseGuards(AuthenticatedGuard)
     @Get('profile')
     getprofile(@Req() req:any){
         return {

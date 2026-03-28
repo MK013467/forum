@@ -3,6 +3,8 @@ import { api } from '@shared/lib/api';
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom';
 import z from 'zod'
+import { useAuth } from '../auth/AuthContext';
+import { toast } from 'react-toastify';
 
 const createPostFormSchema = z.object({
   title: z.string().min(1, 'title is required'),
@@ -13,8 +15,17 @@ const createPostFormSchema = z.object({
 type createPostForm = z.infer<typeof createPostFormSchema>
 
 const CreatePostPage = () => {
-
   const navigate = useNavigate();
+  console.log(useAuth())
+  // if(!user){
+  //   toast.error("You should log in to create a new post",{
+  //     position:"bottom-center",
+  //     autoClose:2000,
+  //     hideProgressBar:true
+  //   })
+  //   navigate("/");
+  // }
+
 
   const {register, handleSubmit , setError,
     formState:{ errors , isLoading, isValid}} = useForm<createPostForm>({
