@@ -32,7 +32,6 @@ export async function setUpSession(app: NestExpressApplication){
       resave:false,
       store: redisStore,
       saveUninitialized: false,
-      proxy:true,
       cookie: {
         httpOnly:true,
         secure: process.env.NODE_ENV === 'production',
@@ -48,8 +47,8 @@ export async function setUpSession(app: NestExpressApplication){
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  await setUpSession(app);
   app.set('trust proxy', true);
+  await setUpSession(app);
   app.use(helmet());
   app.useGlobalPipes(
     new ValidationPipe({

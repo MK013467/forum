@@ -19,7 +19,7 @@ type LoginForm = z.infer<typeof LoginFormSchema>;
 
 const LoginUserPage = () => {
   
-  const { setUser } = useAuth();
+  const { setUser , refreshUser } = useAuth();
   const { register , handleSubmit,  setError, 
     formState:{errors, isValid , isSubmitting}} = useForm<LoginForm>({
     resolver: zodResolver(LoginFormSchema),

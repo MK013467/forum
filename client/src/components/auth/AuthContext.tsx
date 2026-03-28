@@ -19,7 +19,7 @@ type propType = {
   children: React.ReactNode
 }
 
-export const AuthContext = createContext<AuthContextType | null>({} as AuthContextType);
+export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: propType) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: propType) => {
   const refreshUser = async () => {
     try {
       const res = await api.get("/auth/profile");
-      setUser(res.data);
+      setUser(res.data.user);
     } catch {
       setUser(null);
     } finally {
@@ -38,8 +38,9 @@ export const AuthProvider = ({ children }: propType) => {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } finally {
-      setUser(null);
+      setUser(null);  // 성공했을 때만
+    } catch (e) {
+      console.error("Logout failed", e);
     }
   };
 
