@@ -14,10 +14,10 @@ export class SessionSerializer extends PassportSerializer{
     }
     
     async deserializeUser(
-      userId: number,
+      userId: any,
       done: (err: Error | null, user: any) => void,
     ) {
-      const user = await this.authService.findById(userId);
+      const user = await this.authService.findById(Number(userId));
   
       if (!user) {
         return done(new Error('User not found'), null);

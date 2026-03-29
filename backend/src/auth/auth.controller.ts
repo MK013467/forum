@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards, ValidationPipe } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
 import { Request , Response } from "express";
 import { AuthenticatedGuard } from "./passport/AuthenticatedGuard";
 import { LocalAuthGuard } from "./passport/LocalAuthGuard";
@@ -25,20 +24,27 @@ export class AuthController{
     @Throttle({ default: { ttl: 60000, limit: 5 } }) 
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@Req() req: any): Promise<{ message: string; user: any; }> {
-
+    async login(@Req() req: any) {
+        console.log('before login - user:', req.user);
+        
         await new Promise((resolve, reject) => {
             req.login(req.user, (err) => {
-            if (err) return reject(err);
-            resolve(true);
+                if (err) {
+                    console.log('req.login ERROR:', err); // ← 에러 있는지
+                    return reject(err);
+                }
+                console.log('after login - session:', req.session); // ← 세션 있는지
+                console.log('after login - sessionID:', req.sessionID);
+                resolve(true);
             });
         });
 
-        return {
-            message: 'Login successful',
-            user: req.user,
-        };
+        return { message: 'Login successful', user: req.user };
     }
+
+
+
+
 
 
     @SkipThrottle()
@@ -65,9 +71,9 @@ export class AuthController{
 
     // @UseGuards(AuthenticatedGuard)
     @Get('profile')
-    getprofile(@Req() req:any){
+    getprofile(@Req() req:Request){
         return {
-            user: req.session.user ?? null,
+            user: req.user ?? null,
             isAuthenticated: req.isAuthenticated?.() ?? false,
             sessionID: req.sessionID,
             session: req.session,
