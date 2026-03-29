@@ -29,7 +29,7 @@ export async function setUpSession(app: NestExpressApplication){
   app.use(
     session({
       secret: configService.get("SECRET")||"SECRET",
-      resave:false,
+      resave:true,
       store: redisStore,
       saveUninitialized: false,
       cookie: {
@@ -49,7 +49,6 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('trust proxy', true);
   await setUpSession(app);
-  app.use(helmet());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true
@@ -58,8 +57,13 @@ async function bootstrap() {
  
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    exposedHeaders: ['Set-Cookie'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Origin', 'Accept', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+
   });
+  app.use(helmet());
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

@@ -67,7 +67,7 @@ export class AuthController{
     @Get('profile')
     getprofile(@Req() req:any){
         return {
-            user: req.user ?? null,
+            user: req.session.user ?? null,
             isAuthenticated: req.isAuthenticated?.() ?? false,
             sessionID: req.sessionID,
             session: req.session,
