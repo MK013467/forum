@@ -38,7 +38,6 @@ npm install
 npm run dev
 
 
-## Environment Variables
-# Examples
+## Environment Variables(Examples)
 - FRONTEND_URL:"https://forum-client-22ty.vercel.app/"
 - SECRET="SECRET"
