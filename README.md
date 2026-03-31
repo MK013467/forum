@@ -5,6 +5,7 @@ A Reddit-like social media application built with React on the frontend and Nest
 
 - Mobile
 <img width="559" height="610" alt="mobile" width="400" src="https://github.com/user-attachments/assets/4c58e492-0d3e-4105-b8e6-3a2a3438c1bd" />
+
 - Desktop
 <img width="859" height="537" alt="desktop" width="400" src="https://github.com/user-attachments/assets/f1192988-783f-442a-9222-b97e35cab3a9" />
 
