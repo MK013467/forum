@@ -29,7 +29,9 @@ interface PostRequest {
 }
 
 const fetchPost = async ({page, searchBy, searchField}: PostRequest) => {
-  const result = await api.get(`/post?page=${page}`);
+  const result = await api.get('/post', {
+    params: { page, searchBy, searchField },
+  });
   return result.data;
 };
 
@@ -115,15 +117,15 @@ const PostsPage = () => {
   const {user} = useAuth();
   const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams 추가
   const page = Number(searchParams.get('page') || 1);
-  const searchBy = searchParams.get('searchBy') || '';   
+  const searchBy = searchParams.get('searchBy') || 'title';
   const searchField = searchParams.get('searchField') || '';  
   const [localSearchBy, setLocalSearchBy] = useState(searchBy);
   const [localSearchField, setLocalSearchField] = useState(searchField);
 
   const navigate = useNavigate();
 
-  const { data: response, isLoading, isError, error, refetch} = useQuery<PostResponse>({
-    queryKey: ['posts', page],
+  const { data: response, isLoading, isError, error} = useQuery<PostResponse>({
+    queryKey: ['posts', page, searchBy, searchField],
     queryFn: () => fetchPost({page,searchBy,searchField}),
     placeholderData: (previousData) => previousData,
   });
@@ -140,6 +142,8 @@ const toSomePage = (p: number) =>
   const handleClickRow = (postId: number) => navigate(`/post/${postId}`);
 
   const handleSearch = () => {
+    console.log('clicked', { localSearchBy, localSearchField });
+
     setSearchParams({
       page: '1',
       searchBy: localSearchBy,
@@ -221,6 +225,8 @@ const toSomePage = (p: number) =>
 
             <select 
               name="searchBy"
+              value={localSearchBy}
+              onChange={(e)=>setLocalSearchBy(e.target.value)}
               className='pr-2'>
             <option value="title">title</option>
             <option value="content">content</option>
@@ -228,12 +234,16 @@ const toSomePage = (p: number) =>
             </select>
 
             <input 
-              className=''/>
+              className=''
+              value={localSearchField}
+              onChange={(e)=>setLocalSearchField(e.target.value)}
+              onKeyDown={handleEnterKeyDown}/>
               <button type='button'
-                onClick={()=> refetch()}
+                onClick={handleSearch}
                 >
                 <CiSearch/>
               </button>
+
               {user&&
                (<button
                 type="button"

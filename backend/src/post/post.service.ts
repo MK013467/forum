@@ -45,45 +45,67 @@ export class PostService {
     }
 
 
-    async getPosts(query:GetPostDto) {
-
-        const {searchField, searchBy, orderByField} = query;
-        const page = query.page || 1.
+    async getPosts(query: GetPostDto) {
+        const { searchBy, searchField, orderByField } = query;
+        const page = Number(query.page) || 1;
         const postsPerPage = 10;
-        const [total, posts] = await this.prisma.$transaction([
-            this.prisma.post.count(),
-            this.prisma.post.findMany({
-            take:postsPerPage,
-            include:{
-                author:{
-                    select:{
-                        username:true
-                    }
-                }
-            },
-            where:
-             searchField? { [searchField] : { contains: searchBy }}:{}, 
-            skip:(page-1)*postsPerPage,
-            orderBy:[
-                orderByField? {[orderByField]:'desc'} :{} ,
-                {createsAt: 'desc'}
-            ]})
-        ])
-        
-         const postWithAuthor =  posts.map(({ author, ...post }) => ({
-            
-            ...post,
-            authorName: author.username,
-          } ) );
-
-          return {
-            posts:postWithAuthor,
-            totalPages: Math.ceil(total/ postsPerPage),
-            currentPage: page
+      
+        let where = {};
+      
+        if (searchField?.trim()) {
+          if (searchBy === 'username') {
+            where = {
+              author: {
+                username: {
+                  contains: searchField,
+                },
+              },
+            };
+          } else if (searchBy === 'title') {
+            where = {
+              title: {
+                contains: searchField,
+              },
+            };
+          } else if (searchBy === 'content') {
+            where = {
+              content: {
+                contains: searchField,
+              },
+            };
           }
-    }
-    
-
+        }
+      
+        const [total, posts] = await this.prisma.$transaction([
+          this.prisma.post.count({ where }),
+          this.prisma.post.findMany({
+            where,
+            take: postsPerPage,
+            skip: (page - 1) * postsPerPage,
+            include: {
+              author: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+            orderBy: [
+              orderByField ? { [orderByField]: 'desc' } : { createsAt: 'desc' },
+            ],
+          }),
+        ]);
+      
+        const postWithAuthor = posts.map(({ author, ...post }) => ({
+          ...post,
+          authorName: author.username,
+        }));
+      
+        return {
+          posts: postWithAuthor,
+          totalPages: Math.ceil(total / postsPerPage),
+          currentPage: page,
+        };
+      }
 
     
 
