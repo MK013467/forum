@@ -1,4 +1,4 @@
-import { api } from "src/api";
+import { api } from "../../api";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type User = {

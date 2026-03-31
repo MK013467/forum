@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from 'src/api';
+import { api } from '../../api';
 import React, { useState } from 'react'
 import {useForm, type SubmitHandler} from "react-hook-form";
 import { GoEye, GoEyeClosed } from 'react-icons/go';

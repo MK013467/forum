@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { FaUserLarge } from "react-icons/fa6";
-import {api} from "src/api";
+import {api} from "../api";
 import { useAuth } from './auth/AuthContext';
 
 const Headers = () => {

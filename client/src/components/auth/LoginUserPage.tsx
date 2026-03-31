@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {useForm, type SubmitHandler} from "react-hook-form";
 import {z} from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from 'src/api';
+import { api } from '../../api';
 import { GoEye } from 'react-icons/go';
 import { GoEyeClosed } from "react-icons/go";
 import { useAuth } from './AuthContext';
