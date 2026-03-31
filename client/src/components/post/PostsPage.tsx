@@ -27,11 +27,15 @@ interface PostRequest {
   searchBy?:string
   searchField?:string
 }
+const fetchPost = async ({ page, searchBy, searchField }: PostRequest) => {
+  const params: Record<string, string | number> = { page };
 
-const fetchPost = async ({page, searchBy, searchField}: PostRequest) => {
-  const result = await api.get('/post', {
-    params: { page, searchBy, searchField },
-  });
+  if (searchBy && searchField?.trim()) {
+    params.searchBy = searchBy;
+    params.searchField = searchField.trim();
+  }
+
+  const result = await api.get('/post', { params });
   return result.data;
 };
 
@@ -115,11 +119,11 @@ const Pagination = ({
 
 const PostsPage = () => {
   const {user} = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams 추가
+  const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams 
   const page = Number(searchParams.get('page') || 1);
-  const searchBy = searchParams.get('searchBy') || 'title';
-  const searchField = searchParams.get('searchField') || '';  
-  const [localSearchBy, setLocalSearchBy] = useState(searchBy);
+  const searchBy = searchParams.get('searchBy') || '';
+  const searchField = searchParams.get('searchField') || '';
+  const [localSearchBy, setLocalSearchBy] = useState(searchBy || 'title');
   const [localSearchField, setLocalSearchField] = useState(searchField);
 
   const navigate = useNavigate();
@@ -142,8 +146,12 @@ const toSomePage = (p: number) =>
   const handleClickRow = (postId: number) => navigate(`/post/${postId}`);
 
   const handleSearch = () => {
-    console.log('clicked', { localSearchBy, localSearchField });
-
+    const trimmed = localSearchField.trim();
+    if (!trimmed) {
+      setSearchParams({ page: '1' });
+      return;
+    }
+    
     setSearchParams({
       page: '1',
       searchBy: localSearchBy,
