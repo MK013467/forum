@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 
 const SignUpUserFormSchema = z.object({
 
-  username:z.string().min(1, "username must be at least 1 characters")
+  username:z.string().min(1, "username must be at least 1` characters")
   .max(20,"username must not exceed 20 characters"),
 
   password:z.string().min(8, "Must be at least 8  characters")
@@ -33,7 +33,8 @@ const SignUpUser = () => {
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { register , handleSubmit, formState: {errors, isValid} } = useForm<userForm>({
-    resolver: zodResolver(SignUpUserFormSchema)
+    resolver: zodResolver(SignUpUserFormSchema),
+    mode:"onBlur"
   });
 
   const onSubmit:SubmitHandler<userForm> = async (data) => {
@@ -56,7 +57,7 @@ const SignUpUser = () => {
 
     }   
   }
-  
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='w-4/5 max-w-2xl bg-white border rounded-lg border-gray-200 text-base p-8 py-12 w-80 sm:w-[352]'>
        <p className='text-gray-900 text-3xl font-medium mb-4'>
@@ -75,22 +76,29 @@ const SignUpUser = () => {
             {errors.email.message}
           </span>
         )}
-      <div
-      className='w-full relative'>
-        <input {...register("password")} type={showPassword? 'text':'password'} placeholder='password' className='w-full  border rounded-2xl p-3 my-2 mb-2'/> 
-        {errors.password && (
-          <span className="text-red-500 text-sm">
-            {errors.password.message}
-          </span>
-        )}
-       
+      <div className='w-full'>
+        <div className='relative'>
+
+        <input {...register("password")} 
+        type={showPassword? 'text':'password'} placeholder='password'
+         className='w-full  border rounded-2xl p-3 my-2 mb-2'
+         /> 
+        
        <button type="button" 
-          disabled={!isValid}
           onClick={() => setShowPassword(prev => !prev)}
-          className="aspect-square
-          absolute right-4 top-1/2 -translate-y-1/2"> 
+          className={`aspect-square
+          absolute right-4 top-1/2 -translate-y-1/2 ${errors.password ? "mb-1":""} `}> 
             {showPassword? <GoEyeClosed/>: <GoEye/> }
         </button >
+        </div>
+        <div className="min-h-[20px] mt-1">
+          {errors.password && (
+            <span className="text-red-500 text-sm">
+              {errors.password.message}
+            </span>
+          )}
+        
+        </div>
       </div>
       <button type='submit' className={`w-full mt-2 ${!isValid ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-500"}  rounded-2xl p-4 py-4 text-white text-l font-semibold`} > Sign Up</button>
 

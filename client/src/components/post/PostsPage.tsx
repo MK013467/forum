@@ -112,6 +112,7 @@ const Pagination = ({
 );
 
 const PostsPage = () => {
+  const {user} = useAuth();
   const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams 추가
   const page = Number(searchParams.get('page') || 1);
   const searchBy = searchParams.get('searchBy') || '';   
@@ -146,7 +147,7 @@ const toSomePage = (p: number) =>
     });
   };
 
-  // Enter 키 지원
+  // Enter key support
   const handleEnterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') handleSearch();
   };
@@ -161,6 +162,17 @@ const toSomePage = (p: number) =>
 
       {/* Mobile */}
       <div className="flex flex-col md:hidden">
+        {user && (
+          <div className="flex justify-end px-3 py-3">
+            <button
+              type="button"
+              onClick={() => navigate("/post/new")}
+              className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-800"
+            >
+              Create Post
+            </button>
+          </div>
+        )}
         {posts.map((post) => (
           <PostFeedItem key={post.id} post={post} onClick={() => handleClickRow(post.id)} />
         ))}
@@ -169,16 +181,19 @@ const toSomePage = (p: number) =>
 
       {/* Desktop */}
       <div className="hidden md:flex justify-center items-start py-10 px-8">
-        <div className="w-4/5 flex flex-col gap-4">
+        <div className="w-4/5 flex flex-col gap-4 relative">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <table className="w-full text-sm">
+            {/* table */}
+            <table 
+            className="w-full text-sm">
+
               <thead>
                 <tr className="border-b-2 border-gray-100 bg-gray-100">
-                  <th className="py-2 px-5 text-black font-medium">Title</th>
-                  <th className="py-2 px-5 text-black font-medium">Author</th>
-                  <th className="py-2 px-5 text-black font-medium">Posted At</th>
-                  <th className="py-2 px-5 text-black font-medium">Views</th>
-                  <th className="py-2 px-5 text-black font-medium">Likes</th>
+                  <th className="text-left py-2 px-5 text-black font-medium">Title</th>
+                  <th className="text-left py-2 px-5 text-black font-medium">Author</th>
+                  <th className="text-left py-2 px-5 text-black font-medium">Posted At</th>
+                  <th className="text-left py-2 px-5 text-black font-medium">Views</th>
+                  <th className="text-left py-2 px-5 text-black font-medium">Likes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -200,7 +215,10 @@ const toSomePage = (p: number) =>
               </tbody>
             </table>
           </div>
+
           <div className='flex justify-center items-center'>
+
+
             <select 
               name="searchBy"
               className='pr-2'>
@@ -216,6 +234,14 @@ const toSomePage = (p: number) =>
                 >
                 <CiSearch/>
               </button>
+              {user&&
+               (<button
+                type="button"
+                onClick={() => navigate("/post/new")}
+                className="px-4 py-2 absolute right-0 bottom-4 rounded-lg bg-blue-500 text-white hover:bg-blue-800 ml-10"
+              >
+              Create Post
+              </button>)}
           </div>
           <Pagination {...paginationProps} />
         </div>
