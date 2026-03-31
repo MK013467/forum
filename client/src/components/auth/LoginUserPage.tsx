@@ -39,7 +39,7 @@ const LoginUserPage = () => {
         position:"bottom-center",
         autoClose:2000,
         hideProgressBar:true
-      })
+      });
       navigate('/');
     }
 

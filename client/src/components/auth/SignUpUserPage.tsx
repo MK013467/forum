@@ -41,13 +41,15 @@ const SignUpUser = () => {
     try{
       const response = await api.post("/auth/signup", data);
       console.log("Success:"+response.data);
-      toast.success("Login Successfully!",{
+      toast.success("SignUp Successfully!",{
         position:"bottom-center",
         autoClose:2000,
         hideProgressBar:true
-      })
-      navigate("/")
-    }
+      });
+
+      setTimeout(() => {
+        navigate("/");
+      }, 500);    }
 
     catch(error:any){
       console.error(error.response?.data);
