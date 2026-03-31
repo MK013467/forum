@@ -4,8 +4,8 @@ A Reddit-like social media application built with React on the frontend and Nest
 ## Tech Stack
 - TypeScript
 - Frontend: React, React-Query, Tailwind CSS
-- Backend: NestJS, Prisma
-- Database: MYSQL (Railway)
+- Backend: NestJS
+- Database: Prisma/MYSQL (Railway), Redis
 - Auth: Session-based authentication
 
 ## Features
@@ -20,4 +20,6 @@ npm install
 npm run dev
 
 ## Environment Variables
-.env.example 파일 만들어서 어떤 변수 필요한지 보여주기
+# Examples
+- FRONTEND_URL:"https://forum-client-22ty.vercel.app/"
+- SECRET="SECRET"
