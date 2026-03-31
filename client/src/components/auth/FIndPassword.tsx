@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "@shared/lib/api"; // if you have this helper; otherwise use fetch/axios
+import { api } from "src/api"; // if you have this helper; otherwise use fetch/axios
 
 export default function FindPassword() {
   const [step, setStep] = useState<"email" | "code">("email");

@@ -1,6 +1,5 @@
 # Forum App
-A Reddit-like social media applicadtion built with React and for Frontend and separate backend in NestJS.
-CSS work was done in TailwindCSS include a responsive design. Built for personal project displaying my skill as a full stack developer with understanding of industry standard.
+A Reddit-like social media application built with React on the frontend and NestJS on the backend. Styled with Tailwind CSS, the app features a responsive user interface and demonstrates full-stack development skills, including frontend/backend integration and modern web application structure.
 
 ## Tech Stack
 - TypeScript

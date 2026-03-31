@@ -1,4 +1,4 @@
-import { api } from "@shared/lib/api";
+import { api } from "src/api";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type User = {

@@ -1,7 +1,6 @@
 {
   "dependencies": {
-    "@tanstack/react-query": "^5.90.21",
-    "axios": "^1.13.6"
+    "axios": "^1.14.0"
   },
   "private": true,
   "workspaces": [

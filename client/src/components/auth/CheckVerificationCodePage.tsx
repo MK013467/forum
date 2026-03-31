@@ -1,4 +1,4 @@
-import { api } from '@shared/lib/api';
+import { api } from 'src/api';
 import { useRef, useState } from 'react'
 
 const OTP_LENGTH = 6;

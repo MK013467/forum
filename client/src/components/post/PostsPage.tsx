@@ -1,4 +1,4 @@
-import { api } from '@shared/lib/api'
+import { api } from 'src/api'
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';

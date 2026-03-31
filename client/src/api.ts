@@ -1,5 +1,7 @@
-import axios, {AxiosInstance} from "axios";
-const url = process.env.NODE_ENV === "development"? "http://localhost:3000": "https://forum-app-production.up.railway.app";
+import axios, {type AxiosInstance} from "axios";
+const baseURL = import.meta.env.DEV
+  ? "http://localhost:3000"
+  : "https://forum-app-production.up.railway.app";
 export const api:AxiosInstance = axios.create({
     baseURL: "https://forum-app-production.up.railway.app",
     withCredentials: true,

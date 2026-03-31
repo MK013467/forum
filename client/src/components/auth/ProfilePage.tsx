@@ -1,4 +1,4 @@
-import { api } from '@shared/lib/api'
+import { api } from 'src/api'
 import React from 'react'
 import { useAuth } from './AuthContext'
 
