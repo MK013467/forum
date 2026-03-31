@@ -5,6 +5,7 @@ import {useForm, type SubmitHandler} from "react-hook-form";
 import { GoEye, GoEyeClosed } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 import {z} from "zod";
+import { toast } from 'react-toastify';
 
 const SignUpUserFormSchema = z.object({
 
@@ -40,6 +41,11 @@ const SignUpUser = () => {
     try{
       const response = await api.post("/auth/signup", data);
       console.log("Success:"+response.data);
+      toast.success("Login Successfully!",{
+        position:"bottom-center",
+        autoClose:2000,
+        hideProgressBar:true
+      })
       navigate("/")
     }
 
