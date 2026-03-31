@@ -2,8 +2,9 @@
 A Reddit-like social media application built with React on the frontend and NestJS on the backend. Styled with Tailwind CSS, the app features a responsive user interface and demonstrates full-stack development skills, including frontend/backend integration and modern web application structure.
 
 ## Live Demo on 
-[forum-client-22ty.vercel.app](https://forum-client-22ty.vercel.app/)
+[forum-client-vercel.app](https://forum-client-22ty.vercel.app/)
 
+## Previews
 - Mobile
 <img width="500" height="610" alt="mobile"  src="https://github.com/user-attachments/assets/4c58e492-0d3e-4105-b8e6-3a2a3438c1bd" />
 
