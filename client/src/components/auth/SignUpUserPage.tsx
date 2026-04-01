@@ -59,7 +59,7 @@ const SignUpUser = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='w-4/5 max-w-2xl bg-white border rounded-lg border-gray-200 text-base p-8 py-12 w-80 sm:w-[352]'>
+    <form onSubmit={handleSubmit(onSubmit)} className='w-4/5 max-w-2xl bg-white border rounded-lg border-gray-200 text-base p-8 py-12 sm:w-[352]'>
        <p className='text-gray-900 text-3xl font-medium mb-4'>
         Sign Up
       </p>
