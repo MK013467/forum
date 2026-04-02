@@ -104,8 +104,8 @@ const OnePostPage = () => {
         return await api.patch(`/post/${postId}`, data);
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['post', postId] }); // 'postId' 문자열 아니고 변수
-        setIsEditing(false); // navigate('/') 말고 이걸로
+        queryClient.invalidateQueries({ queryKey: ['post', postId] }); 
+        setIsEditing(false); 
       }
     });
 
@@ -131,7 +131,8 @@ const OnePostPage = () => {
       }
       ,
 
-      // The value returned from this function will be passed to the onSuccess, onError, and onSettled functions and can be useful for rolling back optimistic updates.
+      // The value returned from this function will be passed to the onSuccess, onError, 
+      // and onSettled functions and can be useful for rolling back optimistic updates.
       onMutate: async({type}) =>{
         
         await queryClient.cancelQueries({queryKey:['post', postId]});
@@ -305,6 +306,7 @@ const OnePostPage = () => {
           <div className='flex py-4'>
              
        
+          {/* If Edit Button is pressed we display a form that user can edit a post */}
           {isEditing ? (
             <form onSubmit={handleUpdateSubmit(handlePostUpdate)} className='w-full flex flex-col gap-2 py-4'>
               <textarea
