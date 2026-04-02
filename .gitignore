@@ -8,6 +8,8 @@ backend/Dockerfile
 backend/prisma/migrations
 backend/dump.sql
 backend/dist/*
+backend/README.md
 
 client/node_modules
 client/dist/*
+client/README.md

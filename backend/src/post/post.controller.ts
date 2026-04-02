@@ -45,7 +45,6 @@ export class PostController {
     @UseGuards(AuthenticatedGuard)
     @Delete(":id")
     async deletePost(@Param('id', ParseIntPipe) id, @Req() req ){
-        console.log(req.user);
         const result = await this.postService.deletePost(id, req.user.id);
         return result;
     }

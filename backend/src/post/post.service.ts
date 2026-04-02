@@ -154,11 +154,11 @@ export class PostService {
             throw new ForbiddenException('You cannot edit this post');
         }
 
-        const result = await this.prisma.post.delete({
-            where:{
-                id:id
-            }
-        })
+        const result = await this.prisma.$transaction([
+          this.prisma.comment.deleteMany({ where: { postId: id } }),
+          this.prisma.post_Like.deleteMany({ where: { postId: id } }),
+          this.prisma.post.delete({ where: { id } }),
+        ]);
 
         return result;
 
