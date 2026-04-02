@@ -262,6 +262,7 @@ const OnePostPage = () => {
           <input
             {...updateRegister('title')}
             className='w-full border rounded-lg p-2 text-2xl font-bold tracking-tight'
+            value={post.title}
           />
         ) : (
           <h1 className='font-bold text-2xl md:text-3xl tracking-tight text-gray-900 leading-snug'>
@@ -305,10 +306,11 @@ const OnePostPage = () => {
              
        
           {isEditing ? (
-            <form onSubmit={handleUpdateSubmit(handlePostUpdate)} className='flex flex-col gap-2 py-4'>
+            <form onSubmit={handleUpdateSubmit(handlePostUpdate)} className='w-full flex flex-col gap-2 py-4'>
               <textarea
                 {...updateRegister('content')}
                 className='w-full min-h-40 border rounded-xl p-2'
+                value={post.content}
               />
               <button
                 type='submit'
