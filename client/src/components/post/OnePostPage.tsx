@@ -88,7 +88,7 @@ const OnePostPage = () => {
 
     const createCommentMutation = useMutation({
       mutationFn: async(data:createCommentForm) =>{
-        return await api.post('/comment', {...data, authorId:post?.authorId, postId:post?.id });
+        return await api.post('/comment', {...data, authorId:user?.id, postId:post?.id });
       },
 
       onSuccess:()=>{
@@ -336,13 +336,15 @@ const OnePostPage = () => {
 
               {user && 
               <button 
-              type='submit'
-              className='self-end border rounded-xl border-gray-400 text-white font-bold bg-blue-400 p-4 py-2'> comment
+                type='submit'
+                className='self-end border rounded-xl border-gray-400 text-white font-bold bg-blue-400 p-4 py-2'> comment
               </button>
               }
               
           </form>
         
+
+        {/* Display COmments */}
         {comments?.map((comment, index) =>
         <div key={index} className='flex flex-col gap-1 py-3 border-b border-gray-200'>
           <div className='flex items-center justify-between'>
@@ -352,6 +354,7 @@ const OnePostPage = () => {
           <p className='text-gray-600 text-sm break-words'>{comment.content}</p>
           <div className='flex items-center gap-1 text-xs text-gray-400'>
             <div className='flex flex-1 mt-2'> 
+            {/* Comment Like Button */}
               <button disabled={!user}
               onClick={()=> handleCommentLike(comment.id)}
               className='w-10 h-10 flex bg-white gap-1'>
@@ -359,6 +362,7 @@ const OnePostPage = () => {
                 {comment.likes>=0 && <span>{comment.likes}</span>}
               </button>
               
+            {/* Comment Disklike Button */}
               <button disabled={!user}
               onClick={() => handleCommentDislike(comment.id)}
               className='w-10 h-10 flex bg-white gap-1'>
