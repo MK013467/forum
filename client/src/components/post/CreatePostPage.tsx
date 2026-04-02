@@ -3,8 +3,9 @@ import { api } from '../../api';
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom';
 import z from 'zod'
-import { useAuth } from '../auth/AuthContext';
 import { toast } from 'react-toastify';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../auth/AuthContext';
 
 const createPostFormSchema = z.object({
   title: z.string().min(1, 'title is required'),
@@ -15,33 +16,44 @@ const createPostFormSchema = z.object({
 type createPostForm = z.infer<typeof createPostFormSchema>
 
 const CreatePostPage = () => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  console.log(useAuth())
-  // if(!user){
-  //   toast.error("You should log in to create a new post",{
-  //     position:"bottom-center",
-  //     autoClose:2000,
-  //     hideProgressBar:true
-  //   })
-  //   navigate("/");
-  // }
+  const {user} = useAuth();
+  if(!user){
+    toast.error("You should log in to create a new post",{
+      position:"bottom-center",
+      autoClose:2000,
+      hideProgressBar:true
+    })
+    navigate("/");
+  }
 
 
   const {register, handleSubmit , setError,
-    formState:{ errors , isLoading, isValid}} = useForm<createPostForm>({
+    formState:{ errors , isSubmitting, isValid}} = useForm<createPostForm>({
       resolver:zodResolver(createPostFormSchema),
       mode:'onChange'
     });
 
-  const onSubmit:SubmitHandler<createPostForm> = async (data) => {
-    try{
-      const response = await api.post("/post", data);
-      navigate('')
-    } 
+  const createPostMutation = useMutation({
+    mutationFn: async(data:createPostForm) => {
+      const res = await api.post('/post', data)
+      return res.data;
+    },
 
-    catch(err:any){
-      console.log(err.response?.data);
-      console.log(err.response?.status);    }
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['posts'] })
+      navigate('/')
+    },
+
+    onError:(error) => {
+      console.log(error.message);
+    }
+  })
+
+
+  const onSubmit:SubmitHandler<createPostForm> = async (data) => {
+    createPostMutation.mutate(data);
   }
 
   return (
@@ -55,9 +67,9 @@ const CreatePostPage = () => {
           <textarea {...register("content" )}placeholder='Text(Optional)'
            className='w-full h-3/5 min-h-40 bg-white border rounded-3xl border-gray-400 p-4 my-4
            resize-none align-top'/>
-          <button disabled={!isValid}
+          <button disabled={!isValid || isSubmitting}
           type='submit' className={`absolute right-0 bottom-0 rounded-2xl text-white font-bold
-           bottom-0 p-4 ${isValid? "bg-blue-500 cursor not-allowed": 'bg-sky-400'}}`}>Post</button>
+           bottom-0 p-4 ${isValid? "bg-blue-500 cursor not-allowed": 'bg-sky-400'}}`}>{isSubmitting? 'Submitting':'Post'}</button>
         </form>
        </div>
       

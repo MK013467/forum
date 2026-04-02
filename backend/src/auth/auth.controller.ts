@@ -80,4 +80,9 @@ export class AuthController{
           };
         
     }
+
+    @Post("send-email")
+    sendEmail(){
+      
+    }
 }

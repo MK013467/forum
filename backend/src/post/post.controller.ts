@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
 import { Postdto } from './dto/Post.dto';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
@@ -37,9 +37,17 @@ export class PostController {
     @UseGuards(AuthenticatedGuard)
     @Patch(":id")
     async updatePost( @Param('id' , ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req ){
-        const post = await this.postService.updatePost(+id, updatepostdto, req.user.userId);{
+        const post = await this.postService.updatePost(+id, updatepostdto, req.user.id);{
             return post;
         }
+    }
+
+    @UseGuards(AuthenticatedGuard)
+    @Delete(":id")
+    async deletePost(@Param('id', ParseIntPipe) id, @Req() req ){
+        console.log(req.user);
+        const result = await this.postService.deletePost(id, req.user.id);
+        return result;
     }
 
     @UseGuards(AuthenticatedGuard)
@@ -48,4 +56,5 @@ export class PostController {
     async uploadImageToPost ( @UploadedFile() file:Express.Multer.File , @Param('id', ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req): Promise<void>{
 
     }
+
 }

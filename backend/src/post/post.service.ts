@@ -150,7 +150,6 @@ export class PostService {
             },
         })
         if(!post) throw new Error("post not found");
-
         if(post.authorId !== userId){
             throw new ForbiddenException('You cannot edit this post');
         }
