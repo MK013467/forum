@@ -14,6 +14,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app/app.controller';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [ 
@@ -32,7 +33,7 @@ import { AppController } from './app/app.controller';
     PassportModule.register({ session: true }),
     UsersModule, PrismaModule, AuthModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'client', 'dist'),
-  }), PostModule, S3Module, CommentModule,  AccountModule, LikeModule],
+  }), PostModule, S3Module, CommentModule,  AccountModule, LikeModule, MailModule],
   controllers: [AppController],
   providers: [],
 })
