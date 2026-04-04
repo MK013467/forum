@@ -3,10 +3,11 @@ import { UserDto } from 'src/users/dtos/User.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class AuthService {
-    constructor (private userService:UsersService){}
+    constructor (private userService:UsersService, private mailService:MailService){}
 
     async validateUser(username: string, password: string) {
         const user = await this.userService.getUserByUsername(username);
@@ -32,9 +33,12 @@ export class AuthService {
     }
 
     async createUser(dto:CreateUserDto){
+        
         try{
-
+            // createUser in DB
             const user = await this.userService.createUser(dto);
+            // send Welcome Email
+            await this.mailService.sendWelcomeMail(dto.email,dto.username);
             return {msg:'User successfuly created'};
 
         }
