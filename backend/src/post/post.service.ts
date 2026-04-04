@@ -154,6 +154,7 @@ export class PostService {
             throw new ForbiddenException('You cannot edit this post');
         }
 
+        // Have to delete all the item related with this post.
         const result = await this.prisma.$transaction([
           this.prisma.comment.deleteMany({ where: { postId: id } }),
           this.prisma.post_Like.deleteMany({ where: { postId: id } }),

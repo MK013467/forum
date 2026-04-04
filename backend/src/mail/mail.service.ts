@@ -9,11 +9,19 @@ export class MailService {
     }
 
     async sendWelcomeMail(userEmail:string , username:string){
-        const {data } = await this.resend.emails.send({
-            from:"minsuk603@gmail.com",
+        const {data , error} = await this.resend.emails.send({
+            from:'noreply@minsokforum.xyz',
             to:userEmail,
             subject:"Welcome to Forum Service",
             html:this.welcomeMailHtml(username)
         })
+
+        if(error ){
+            console.log(error);
+        }
+        else{
+            console.log(data);
+            return data;
+        }    
     }
 }

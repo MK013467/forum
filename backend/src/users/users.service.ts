@@ -1,11 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { PrismaModule } from 'src/prisma/prisma.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/CreateUser.dto';
 import * as bcrypt from 'bcrypt';
-import crypto from "crypto";
-import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class UsersService {
@@ -66,6 +63,15 @@ export class UsersService {
             }
         })
         return user;
+    }
+
+    // Delete
+    async deleteUser(username:string){
+        const result = await this.prisma.user.delete({
+            where:{
+                username:username
+            }
+        })
     }
 
 
