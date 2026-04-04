@@ -49,8 +49,8 @@ const createCommentFormSchema = z.object({
 type createCommentForm = z.infer<typeof createCommentFormSchema>;
 
 const fetchPost = async (postId:number)=>{
-  const response = await api.get(`/post/${postId}`)
-  return response.data;
+  const res =  await api.get(`/post/${postId}`)
+  return res.data;
 };
 
 
@@ -95,7 +95,8 @@ const OnePostPage = () => {
         queryClient.invalidateQueries({queryKey:['post', postId]})
       },
 
-      onError:()=> {
+      onError:(err:any)=> {
+        console.log(err)
 
       }
     })
@@ -154,6 +155,7 @@ const OnePostPage = () => {
 
       onError: ( err, variable, context) =>{
         queryClient.setQueryData(['post', postId], context?.previousPost);
+        console.log(err)
       },
 
       onSettled: () => {
@@ -185,7 +187,8 @@ const OnePostPage = () => {
       },
 
       onError: (err, variable, context) => {
-        queryClient.setQueryData(['post', postId] , context?.previousPost)
+        queryClient.setQueryData(['post', postId] , context?.previousPost);
+        console.log(err);
       },
 
       onSettled: () => {
