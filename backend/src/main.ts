@@ -58,7 +58,10 @@ async function bootstrap() {
   );
     
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin:[
+      process.env.FRONTEND_URL!,       
+      'http://localhost:5173',          
+  ],
     exposedHeaders: ['Set-Cookie'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Origin', 'Accept', 'Authorization'],

@@ -12,7 +12,7 @@ import axios from "axios";
     (response) => {
         return {
           ...response,
-          data:response.data
+          data:response.data.data
         }
     }
 );
