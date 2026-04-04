@@ -8,6 +8,8 @@ import helmet from 'helmet';
 import { createClient } from "redis";
 import { RedisStore } from 'connect-redis';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ResponseInterceptor } from './common/response.interceptor';
+import { HttpExceptionFilter } from './common/http-exception.interceptor';
 
 export async function setUpSession(app: NestExpressApplication){
   const configService = app.get<ConfigService>(ConfigService);
@@ -54,7 +56,7 @@ async function bootstrap() {
       transform: true
     })
   );
- 
+    
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     exposedHeaders: ['Set-Cookie'],
@@ -64,6 +66,11 @@ async function bootstrap() {
 
   });
   app.use(helmet());
+  // For success
+  app.useGlobalInterceptors(new ResponseInterceptor()); 
+  // For errors
+  app.useGlobalFilters(new HttpExceptionFilter());        
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
