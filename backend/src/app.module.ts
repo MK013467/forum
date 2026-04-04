@@ -7,7 +7,6 @@ import { AuthModule } from './auth/AuthModule';
 import { PostModule } from './post/post.module';
 import { S3Module } from './s3/s3.module';
 import { CommentModule } from './comment/comment.module';
-import { AccountModule } from './account/account.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LikeModule } from './like/like.module';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -33,7 +32,7 @@ import { MailModule } from './mail/mail.module';
     PassportModule.register({ session: true }),
     UsersModule, PrismaModule, AuthModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'client', 'dist'),
-  }), PostModule, S3Module, CommentModule,  AccountModule, LikeModule, MailModule],
+  }), PostModule, S3Module, CommentModule, LikeModule, MailModule],
   controllers: [AppController],
   providers: [],
 })

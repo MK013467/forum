@@ -9,3 +9,12 @@ export const api = axios.create({
         'Content-Type': 'application/json',
       },
   });
+
+  api.interceptors.response.use(
+    (response) => {
+        return {
+          ...response,
+          data:response.data
+        }
+    }
+);
