@@ -73,20 +73,22 @@ const ProfilePage = () => {
                             <h1 className='pl-5 text-red-500'>Delete Account</h1>
                         </button>
                         {showDeleteModal && (
-                            <div className='fixed z-50 px-4 py-10 bg-white border border-gray-200 rounded-2xl'>
-                                <h1 className='text-center font-medium'>Delete Account</h1>
-                                <p className=''>This is a permanent and can not be done. Are you sure to delete your account?</p>
-                                <div className='flex justify-around mt-2'>
-                                    <button 
-                                        onClick={()=>handleDeleteAccount()}
-                                        className='bg-red-500 text-white rounded-xl px-3 py-2'>
-                                        Delete
-                                    </button>
-                                    <button 
-                                        onClick={()=> setShowDeleteModal(false)}
-                                        className='bg-gray-300 text-gray-500 rounded-xl px-3 py-2'>
-                                        Cancel
-                                    </button>
+                            <div className='fixed inset-0 items-center justify-center z-50 px-4 py-10 bg-black/30 border border-gray-200 rounded-2xl'>
+                                <div className="w-full max-w-md rounded-2xl bg-white border border-gray-200 shadow-xl p-6">
+                                    <h1 className='text-center font-medium text-xl'>Delete Account 😢</h1>
+                                    <p className=''>This is a permanent and can not be done. Are you sure to delete your account?</p>
+                                    <div className='flex justify-around mt-2'>
+                                        <button 
+                                            onClick={()=>handleDeleteAccount()}
+                                            className='bg-red-500 text-white rounded-xl px-3 py-2'>
+                                            Delete
+                                        </button>
+                                        <button 
+                                            onClick={()=> setShowDeleteModal(false)}
+                                            className='bg-gray-300 text-gray-500 rounded-xl px-3 py-2'>
+                                            Cancel
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -108,9 +110,58 @@ const ProfilePage = () => {
                 {/* right */}
                 <div className='flex-1 flex flex-col justify-center border border-gray-300 p-10'>
 
-                    <div className=''>
-                        <h1 className='text-bold'>Settings</h1>
+                    <div className='flex flex-col gap-3'>
+                        <h1 className='font-bold text-2xl text-black'>Settings</h1>
+                        <Link
+                            to="/user/change-password"
+                            className='flex items-center bg-white rounded-2xl border border-gray-100 font-medium px-2 py-2'>
+                            <FaUnlockKeyhole className='w-6 h-6'/>
+                            <h1 className='pl-5 text-xl'> Change Password</h1>
+                        </Link>
+                        <button 
+                        onClick={()=> logout()}
+                        className='flex items-center bg-white rounded-2xl border border-gray-100 font-medium px-2 py-2'>
+                            <MdLogout className='w-6 h-6'/>
+                            <h1 className='pl-5 text-xl'>Log out</h1>
+                        </button>
+                    </div>
+                    <div className='flex flex-col w-full pt-10'>
+                        <h1 className='text-xl text-red-500 font-bold mb-5'>Danger Zone</h1>
+                        <button
+                                onClick={() => setShowDeleteModal(true)}
+                                className='flex items-center bg-white rounded-2xl border border-gray-100 font-medium px-3 py-2'>
+                                <PiSignOutDuotone className='w-6 h-6 text-red-500'/>
+                                <h1 className='pl-5 text-red-500 text-xl'>Delete Account</h1>
+                        </button>
+                        {showDeleteModal && (
+                            <div
+                                className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4"
+                                onClick={() => setShowDeleteModal(false)}>
+                                <div
+                                    className="w-full max-w-[420px] rounded-2xl bg-white p-6 shadow-2xl"
+                                    onClick={(e) => e.stopPropagation()}>
+                                <h1 className="text-center text-2xl font-bold text-gray-800">
+                                    Delete Account 😢
+                                </h1>
+                                <p className="mt-4 text-center text-gray-600 leading-6">
+                                    This is permanent and cannot be undone. Are you sure you want to delete your account?
+                                </p>
+                                <div className="mt-6 flex items-center justify-center gap-3">
+                                    <button
+                                        onClick={handleDeleteAccount}
+                                        className="rounded-xl bg-red-500 px-5 py-2.5 font-medium text-white hover:bg-red-600">
+                                    Delete
+                                    </button>
 
+                                    <button
+                                        onClick={() => setShowDeleteModal(false)}
+                                        className="rounded-xl bg-gray-200 px-5 py-2.5 font-medium text-gray-700 hover:bg-gray-300">
+                                    Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        )}
                     </div>
                 </div>
 
