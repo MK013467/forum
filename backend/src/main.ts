@@ -13,6 +13,7 @@ import { HttpExceptionFilter } from './common/http-exception.interceptor';
 
 export async function setUpSession(app: NestExpressApplication){
   const configService = app.get<ConfigService>(ConfigService);
+  
   const redisClient = createClient({
     url:configService.get("REDIS_URL")
   });
@@ -56,7 +57,7 @@ async function bootstrap() {
       transform: true
     })
   );
-    
+
   app.enableCors({
     origin:[
       process.env.FRONTEND_URL!,       
@@ -68,10 +69,11 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 
   });
+    
   app.use(helmet());
   // For success
   app.useGlobalInterceptors(new ResponseInterceptor()); 
-  // For errors
+  // // For errors
   app.useGlobalFilters(new HttpExceptionFilter());        
 
   await app.listen(process.env.PORT ?? 3000);

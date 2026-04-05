@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Req, Res, UnauthorizedException, UseGuards, ValidationPipe } from "@nestjs/common";
 import { Request , Response } from "express";
 import { AuthenticatedGuard } from "./passport/AuthenticatedGuard";
 import { LocalAuthGuard } from "./passport/LocalAuthGuard";
@@ -25,16 +25,12 @@ export class AuthController{
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Req() req: any) {
-        console.log('before login - user:', req.user);
         
         await new Promise((resolve, reject) => {
             req.login(req.user, (err) => {
                 if (err) {
-                    console.log('req.login ERROR:', err); // ← 에러 있는지
                     return reject(err);
                 }
-                console.log('after login - session:', req.session); // ← 세션 있는지
-                console.log('after login - sessionID:', req.sessionID);
                 resolve(true);
             });
         });
@@ -51,20 +47,14 @@ export class AuthController{
     @Post('logout')
     async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
       await new Promise<void>((resolve, reject) => {
-        req.logout((err: any) => {
-          if (err) return reject(err);
-          resolve();
-        });
+        req.logout((err: any) => (err? reject(err) : resolve()));
       });
     
       await new Promise<void>((resolve, reject) => {
-        req.session.destroy((err: any) => {
-          if (err) return reject(err);
-          resolve();
-        });
+        req.session.destroy((err: any) => { err ? reject(err) : resolve()});
       });
     
-      res.clearCookie('sid');
+      res.clearCookie('connect.sid');
       return { message: 'user logged out.' };
     }
 
@@ -81,8 +71,4 @@ export class AuthController{
         
     }
 
-    @Post("send-email")
-    sendEmail(){
-      
-    }
 }

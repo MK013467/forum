@@ -7,6 +7,9 @@ export class HttpExceptionFilter implements ExceptionFilter{
     catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
+        // For server
+        console.error(exception);
+        console.error(exception?.stack);
 
         const status =
             exception instanceof HttpException

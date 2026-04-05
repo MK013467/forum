@@ -1,3 +1,0 @@
-interface DeleteUserDto{
-    username:string
-}

@@ -14,5 +14,9 @@ import axios from "axios";
           ...response,
           data:response.data.data
         }
+    },
+    (err) => {
+      console.log(err);
+      return err;
     }
 );

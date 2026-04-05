@@ -66,12 +66,21 @@ export class UsersService {
     }
 
     // Delete
-    async deleteUser(username:string){
-        const result = await this.prisma.user.delete({
-            where:{
-                username:username
-            }
-        })
+    async deleteUser(userId:number){
+        try{
+
+            const result = await this.prisma.$transaction([
+                this.prisma.comment_Like.deleteMany({where:{userId:userId}}),
+                this.prisma.comment.deleteMany({where:{authorId:userId}}),
+                this.prisma.post_Like.deleteMany({where:{userId:userId} }),
+                this.prisma.post.deleteMany({where:{authorId:userId}}),
+                this.prisma.user.delete({where:{id:userId}})
+            ]);
+            return result;
+        }
+        catch(err){
+            console.log(err);
+        }
     }
 
 

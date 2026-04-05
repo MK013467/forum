@@ -40,7 +40,6 @@ export class AuthService {
             // send Welcome Email
             await this.mailService.sendWelcomeMail(dto.email,dto.username);
             return {msg:'User successfuly created'};
-
         }
 
         catch(err){

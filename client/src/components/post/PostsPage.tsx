@@ -34,9 +34,12 @@ const fetchPost = async ({ page, searchBy, searchField }: PostRequest) => {
     params.searchBy = searchBy;
     params.searchField = searchField.trim();
   }
-
-  const result = await api.get('/post', { params });
-  return result.data;
+  try{
+    const result = await api.get('/post', { params });
+    return result.data;
+  }
+  catch(err){
+  }
 };
 
 const formatDate = (date: string) => {
@@ -137,11 +140,11 @@ const PostsPage = () => {
   const posts = response?.posts ?? [];
   const totalPages = response?.totalPages ?? 1;
   const toPrevPage = () =>
-  setSearchParams({ page: String(page - 1), searchBy, searchField });
-const toNextPage = () =>
-  setSearchParams({ page: String(page + 1), searchBy, searchField });
-const toSomePage = (p: number) =>
-  setSearchParams({ page: String(p), searchBy, searchField });
+    setSearchParams({ page: String(page - 1), searchBy, searchField });
+  const toNextPage = () =>
+    setSearchParams({ page: String(page + 1), searchBy, searchField });
+  const toSomePage = (p: number) =>
+    setSearchParams({ page: String(p), searchBy, searchField });
 
   const handleClickRow = (postId: number) => navigate(`/post/${postId}`);
 
@@ -264,8 +267,6 @@ const toSomePage = (p: number) =>
           <Pagination {...paginationProps} />
         </div>
       </div>
-   
-
     </div>
   );
 };

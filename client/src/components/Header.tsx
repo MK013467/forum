@@ -57,7 +57,7 @@ const Headers = () => {
       )}
       {isAuthenticated && (
       <Link
-        to="/auth/profile"
+        to={`/user/profile/${user.id}`}
         className="ml-1 flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
       >
         <FaUserLarge className="h-5 w-5" />

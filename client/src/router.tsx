@@ -7,7 +7,7 @@ import SignUpUser from "./components/auth/SignUpUserPage";
 import { Layout } from "./components/Layout";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import CheckVerificationCodePage from "./components/auth/CheckVerificationCodePage";
-import ProfilePage from "./components/auth/ProfilePage";
+import ProfilePage from "./components/user/ProfilePage";
 import ErrorTestPage from "./components/error/ErrorTestPage";
 import RouteErrorPage from "./components/error/RouteErrorPage";
 
@@ -20,6 +20,7 @@ const router = createBrowserRouter([{
             element: <PostsPage/>,
     
         },
+        // auth
         {
             path:"/auth",
             children:[
@@ -48,7 +49,8 @@ const router = createBrowserRouter([{
                 }
             ]
         },
-    
+
+        // for posts
         {
             path:"/post",
             element:<PostsPage/>
@@ -63,8 +65,12 @@ const router = createBrowserRouter([{
             path:"/post/new",
             element:<CreatePostPage/>
         },
+        // profile
+        {
+            path:'/user/profile/:userid',
+            element:<ProfilePage/>
+        }
     ],
-   
 },
     {
         path:"/test/error",
