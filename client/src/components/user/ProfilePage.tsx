@@ -113,7 +113,7 @@ const ProfilePage = () => {
                     <div className='flex flex-col gap-3'>
                         <h1 className='font-bold text-2xl text-black'>Settings</h1>
                         <Link
-                            to="/user/change-password"
+                            to="/auth/change-password"
                             className='flex items-center bg-white rounded-2xl border border-gray-100 font-medium px-2 py-2'>
                             <FaUnlockKeyhole className='w-6 h-6'/>
                             <h1 className='pl-5 text-xl'> Change Password</h1>
