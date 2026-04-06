@@ -10,6 +10,7 @@ import CheckVerificationCodePage from "./components/auth/CheckVerificationCodePa
 import ProfilePage from "./components/user/ProfilePage";
 import ErrorTestPage from "./components/error/ErrorTestPage";
 import RouteErrorPage from "./components/error/RouteErrorPage";
+import ChangePasswordPage from "./components/auth/ChangePassword";
 
 const router = createBrowserRouter([{
     element:<Layout/>,
@@ -27,6 +28,10 @@ const router = createBrowserRouter([{
                 {
                     path:"reset-pass",
                     element:<ResetPasswordPage/>,
+                },
+                {
+                    path:"change-apssword",
+                    element:<ChangePasswordPage/>
                 },
                 {
         

@@ -55,7 +55,7 @@ const ProfilePage = () => {
                     <div className='w-full flex flex-col mt-20 gap-3'>
                     <div className="flex-grow border-b border-gray-400"></div>
                         <Link
-                            to="/user/change-password"
+                            to="/auth/change-password"
                             className='flex items-center bg-white rounded-2xl border border-gray-100 font-medium px-3 py-2'>
                             <FaUnlockKeyhole/>
                             <h1 className='pl-5'> Change Password</h1>
