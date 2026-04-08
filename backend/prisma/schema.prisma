@@ -54,6 +54,7 @@ model VerificationCode {
   updatesAt  DateTime? @updatedAt
   expiresAt  DateTime
   requestNum Int       @default(1)
+    @@unique([userId, type])
 }
 
 model Comment {
