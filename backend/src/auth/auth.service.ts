@@ -4,13 +4,15 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { MailService } from "src/mail/mail.service";
+import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
     constructor (private userService:UsersService, private mailService:MailService){}
 
     async validateUser(username: string, password: string) {
-        const user = await this.userService.getUserByUsername(username);
+        const user = await this.userService.getUserByUsernameWithPassword(username);
         if(!user) {
             console.log("User does not exists");
             throw new UnauthorizedException();
@@ -47,6 +49,13 @@ export class AuthService {
         }
     }
 
-    
-    
+    async resetPassword(dto:ResetPasswordDto){
+        const user = await this.userService.findUserByUsername(dto.username);
+        if(!user){
+            return ;
+        }
+        await this.mailService.sendVerificationCode(user.email);
+        return {msg:""};
+    }
+
 }

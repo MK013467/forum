@@ -71,4 +71,9 @@ export class AuthController{
         
     }
 
+    @Post("reset-password")
+    async resetPassword(){
+
+    }
+
 }

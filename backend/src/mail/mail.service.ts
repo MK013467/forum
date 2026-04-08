@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Resend } from 'resend';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class MailService {
@@ -23,5 +24,10 @@ export class MailService {
             console.log(data);
             return data;
         }    
+    }
+
+
+    sendVerificationCode(email:string) {
+        throw new Error('Method not implemented.');
     }
 }

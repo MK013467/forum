@@ -38,6 +38,7 @@ const router = createBrowserRouter([{
                     path:"checkvc",
                     element:<CheckVerificationCodePage/>
                 },
+                
                 {
                     path:"login",
                     element:<LoginUserPage/>

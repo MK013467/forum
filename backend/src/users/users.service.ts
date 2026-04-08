@@ -55,11 +55,36 @@ export class UsersService {
         return user;
     }
 
-
-    async getUserByUsername(username:string){
+    async findUserByUsername(username:string){
         const user = await this.prisma.user.findUnique({
             where:{
                 username:username
+            },
+            select:{
+                id:true,
+                username:true,
+                email:true
+            }
+        })
+
+        return user;
+    }
+
+
+    async getUserByUsernameWithPassword(username:string){
+        const user = await this.prisma.user.findUnique({
+            where:{
+                username:username
+            }
+        })
+        return user;
+    }
+
+
+    async getUserByEmail(email:string){
+        const user = await this.prisma.user.findUnique({
+            where:{
+                email:email
             }
         })
         return user;
