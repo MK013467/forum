@@ -6,6 +6,7 @@ import { UsersService } from "src/users/users.service";
 import { SkipThrottle, Throttle } from "@nestjs/throttler";
 import { AuthService } from "./auth.service";
 import { CreateUserDto } from "src/users/dtos/CreateUser.dto";
+import { ResetPasswordDto } from "./dto/resetPassword.dto";
 
 @Controller('auth')
 export class AuthController{
@@ -72,8 +73,9 @@ export class AuthController{
     }
 
     @Post("reset-password")
-    async resetPassword(){
-
+    async resetPassword(dto: ResetPasswordDto){
+      const result = await this.authService.resetPassword(dto);
+      
     }
 
 }

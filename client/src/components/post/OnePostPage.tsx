@@ -61,7 +61,7 @@ const OnePostPage = () => {
   const {postId} = useParams();
   const [isEditing , setIsEditing] = useState<boolean>(false);
 
-
+ 
   const{data:post,isLoading, isError, error} = useQuery<Post>({
      queryKey:['post',postId],
      queryFn: () =>fetchPost(Number(postId))

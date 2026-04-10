@@ -30,10 +30,6 @@ const router = createBrowserRouter([{
                     element:<ResetPasswordPage/>,
                 },
                 {
-                    path:"change-password",
-                    element:<ChangePasswordPage/>
-                },
-                {
         
                     path:"checkvc",
                     element:<CheckVerificationCodePage/>

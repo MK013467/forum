@@ -40,16 +40,16 @@ const ResetPasswordPage = () => {
                 placeholder='your email'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className='w-full border bg-slate-100 rounded-2xl border-sky-400
-            p-4 py-4 my-4'
+                className='w-full border rounded-2xl border-gray-200 p-4 py-2 mb-4'
             />
             <button 
             type='submit' 
             disabled={isEmailValid}
-            className='absolute bottom-32 bg-sky-400 right-0 mt-2 rounded-2xl p-4 py-2 text-white
-            disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed disabled:hover:bg-slate-300'>
+            className='w-full mt-2 bg-indigo-500 rounded-xl p-6 py-4 text-white text-l font-semibold'>
                 Send Verification Code
             </button>
+
+            <input className=''/>
          
 
             <Link to={"/auth/find-username"} className='absolute left-2 bottom-4 text-indigo-500 text-sm'>Forgot your username?</Link>

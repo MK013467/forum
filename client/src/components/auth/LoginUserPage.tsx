@@ -76,7 +76,7 @@ const LoginUserPage = () => {
         </button >
       </div>
       <p className='text-red-500'>{errors&& errors.root?.message as string}</p>
-      <Link to={'/auth/signup'} className='text-indigo-500 text-sm'>Forgot a Password?</Link>
+      <Link to={'/auth/reset-pass'} className='text-indigo-500 text-sm'>Forgot a Password?</Link>
       <button   disabled={!isValid || isSubmitting}
         type='submit'
         className={`w-full mt-2 rounded-2xl p-4 py-2 text-white text-l font-semibold 

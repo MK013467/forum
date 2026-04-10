@@ -13,7 +13,7 @@ import { AuthProvider } from './components/auth/AuthContext.tsx';
 
 const quryClient = new QueryClient({mutationCache: new MutationCache({
   onError: (error: any) => {
-    alert(`에러가 발생했습니다: ${error.response?.data?.message || error.message}`);
+    alert(`Error: ${error.response?.data?.message || error.message}`);
   },
 })});
 

@@ -177,7 +177,7 @@ const PostsPage = () => {
 
       {/* Mobile */}
       <div className="flex flex-col md:hidden">
-        {user && (
+        {user && ( 
           <div className="flex justify-end px-3 py-3">
             <button
               type="button"
