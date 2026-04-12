@@ -14,7 +14,6 @@ function generateOTP(length = 6){
 @Injectable()
 export class MailService {
 
-    constructor(private readonly prisma:PrismaService){};
 
     private readonly resend = new Resend(process.env.RESEND_API_KEY);
     private readonly welcomeMailHtml = ( username) => {

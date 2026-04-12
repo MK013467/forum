@@ -36,6 +36,10 @@ export class AuthService {
        
     }
 
+    async findById(id:number){
+        return await this.userService.findUserById(id);
+    }
+
     async sendEmail(email:string){
         const user = await this.userService.findUserByEmail(email);
         if(!user){
