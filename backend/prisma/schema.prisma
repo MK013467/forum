@@ -35,8 +35,8 @@ model Post {
   authorId  Int
   comments  Comment[]
   author    User      @relation(fields: [authorId], references: [id])
-
-  @@index([authorId], map: "Post_authorId_fkey")
+  @@index([createsAt], map:"Post_createsAt_idx")
+  @@index([authorId], map: "Post_authorId_idx")
 }
 enum VerificationType {
   CHANGE_PASSWORD
@@ -56,6 +56,7 @@ model VerificationCode {
   requestNum Int       @default(1)
     @@unique([userId, type])
 }
+
 
 model Comment {
   id        Int      @id @default(autoincrement())

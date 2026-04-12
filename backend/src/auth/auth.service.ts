@@ -19,13 +19,6 @@ export class AuthService {
             throw new UnauthorizedException("Password error")
 
         } 
-
-        return user;
-    }
-
-    async findById(id:number){
-        const user = await this.userService.findUserById(id);
-        
         return user;
     }
 
