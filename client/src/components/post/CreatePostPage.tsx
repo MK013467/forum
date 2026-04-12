@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import z from 'zod'
 import { toast } from 'react-toastify';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../auth/AuthContext';
+import { useAuthStore } from 'src/store/useAuthStore';
 
 const createPostFormSchema = z.object({
   title: z.string().min(1, 'title is required'),
@@ -18,7 +18,7 @@ type createPostForm = z.infer<typeof createPostFormSchema>
 const CreatePostPage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const {user} = useAuth();
+  const user = useAuthStore((state)=>state.user);
   if(!user){
     toast.error("You should log in to create a new post",{
       position:"bottom-center",

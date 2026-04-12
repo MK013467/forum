@@ -3,13 +3,13 @@ import { FaUserLarge } from "react-icons/fa6";
 import { MdLogout } from "react-icons/md";
 import { PiSignOutDuotone } from "react-icons/pi";
 import { FaUnlockKeyhole } from "react-icons/fa6";
-import { useAuth } from '../auth/AuthContext'
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from 'src/store/useAuthStore';
 const ProfilePage = () => {
-
-    const { user, logout, setUser } = useAuth();
+    const user = useAuthStore((state) => state.user);
+    const logout = useAuthStore((state) => state.logout);
     const navigate = useNavigate();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -25,7 +25,7 @@ const ProfilePage = () => {
             setDeleting(true);
             await api.delete('/user/me');
             // Server side logout is already done by above code so we need to manually setUser to null
-            setUser(null);
+            logout();
             queryClient.removeQueries({ queryKey: ['posts'] });
             navigate("/");
         }

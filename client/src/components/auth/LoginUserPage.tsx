@@ -6,8 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '../../api';
 import { GoEye } from 'react-icons/go';
 import { GoEyeClosed } from "react-icons/go";
-import { useAuth } from './AuthContext';
 import {toast} from 'react-toastify';
+import { useAuthStore } from 'src/store/useAuthStore';
 
 const LoginFormSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -19,8 +19,11 @@ type LoginForm = z.infer<typeof LoginFormSchema>;
 
 const LoginUserPage = () => {
   
-  const { setUser , refreshUser } = useAuth();
-  const { register , handleSubmit,  setError, 
+  const user = useAuthStore ((state) => state.user);
+  const isLoggedIn = useAuthStore ((state) => state.isLoggedIn);
+  const login = useAuthStore ((state) => state.login);
+  const logout = useAuthStore((state) => state.logout);  const { register , handleSubmit,  setError, 
+
     formState:{errors, isValid , isSubmitting}} = useForm<LoginForm>({
     resolver: zodResolver(LoginFormSchema),
     mode: "onChange"
@@ -34,7 +37,7 @@ const LoginUserPage = () => {
   const onSubmit:SubmitHandler<LoginForm> = async (data) => {
     try{
       const response = await api.post("/auth/login", data);
-      setUser(response.data.user);
+      login(response.data.user);
       toast.success("Login Successfully!",{
         position:"bottom-center",
         autoClose:2000,

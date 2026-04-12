@@ -23,7 +23,8 @@
     "react-icons-kit": "^2.0.0",
     "react-router-dom": "^7.13.0",
     "react-toastify": "^11.0.5",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@types/node": "^25.3.0",

@@ -4,7 +4,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
 import { CiSearch } from "react-icons/ci";
 import { useState } from 'react';
-import { useAuth } from '../auth/AuthContext';
+import { useAuthStore } from 'src/store/useAuthStore';
 
 interface Post {
   id: number;
@@ -121,7 +121,7 @@ const Pagination = ({
 );
 
 const PostsPage = () => {
-  const {user} = useAuth();
+  const user = useAuthStore((state) => state.user);
   const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams 
   const page = Number(searchParams.get('page') || 1);
   const searchBy = searchParams.get('searchBy') || '';

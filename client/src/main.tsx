@@ -7,7 +7,6 @@ import { MutationCache, QueryClient, QueryClientProvider } from '@tanstack/react
 import { ErrorBoundary } from 'react-error-boundary';
 import RootErrorPage from './components/error/RootErrorPage.tsx';
 import { ToastContainer } from 'react-toastify';
-import { AuthProvider } from './components/auth/AuthContext.tsx';
 
 
 
@@ -26,9 +25,8 @@ createRoot(document.getElementById('root')!).render(
         autoClose={2000}
         theme='light'/>
       <QueryClientProvider client={quryClient}>
-        <AuthProvider>
        <RouterProvider router={router}/>
-       </AuthProvider>
+       
       </QueryClientProvider>
     </ErrorBoundary>
   </StrictMode>,

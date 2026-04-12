@@ -3,10 +3,10 @@ import { api } from '../../api';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z} from 'zod';
-import { useAuth } from '../auth/AuthContext';
 import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useQuery , useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useAuthStore } from 'src/store/useAuthStore';
 
 // post interface
 interface Post {
@@ -57,7 +57,7 @@ const fetchPost = async (postId:number)=>{
 const OnePostPage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const  user  = useAuthStore((state)=>state.user);
   const {postId} = useParams();
   const [isEditing , setIsEditing] = useState<boolean>(false);
 
