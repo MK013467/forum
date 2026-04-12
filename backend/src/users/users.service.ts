@@ -70,6 +70,19 @@ export class UsersService {
         return user;
     }
 
+    async findUserByEmail(email:string){
+        const user = await this.prisma.user.findUnique({
+            where:{
+                email:email
+            },
+            select:{
+                id:true,
+                username:true,
+                email:true
+            }
+        })
+        return user;
+    }
 
     async getUserByUsernameWithPassword(username:string){
         const user = await this.prisma.user.findUnique({

@@ -5,7 +5,6 @@ export class CreateUserDto {
     @MinLength(1, {message:"username should be at least 1 characters"})
     @MaxLength(20, {message:"username should be less than 20 characters"})
     username: string;
-    displayName?: string;
     @IsEmail()
     email: string;
     @IsNotEmpty()

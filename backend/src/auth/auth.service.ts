@@ -1,11 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserDto } from 'src/users/dtos/User.dto';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { MailService } from "src/mail/mail.service";
-import { ResetPasswordDto } from './dto/resetPassword.dto';
-import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -14,14 +11,12 @@ export class AuthService {
     async validateUser(username: string, password: string) {
         const user = await this.userService.getUserByUsernameWithPassword(username);
         if(!user) {
-            console.log("User does not exists");
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("User does not exists");
         } 
 
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) {
-            console.log("Password error");
-            throw new UnauthorizedException()
+            throw new UnauthorizedException("Password error")
 
         } 
 
@@ -34,28 +29,32 @@ export class AuthService {
         return user;
     }
 
-    async createUser(dto:CreateUserDto){
+    async signup(dto:CreateUserDto){
+     
+        const findUser = await this.userService.findUserByUsername(dto.username);
+        if(findUser) throw new ConflictException('username is already taken');
+            
+        // createUser in DB
+        await this.userService.createUser(dto);
+        // send Welcome Email
+        await this.mailService.sendWelcomeMail(dto.email,dto.username);
         
-        try{
-            // createUser in DB
-            const user = await this.userService.createUser(dto);
-            // send Welcome Email
-            await this.mailService.sendWelcomeMail(dto.email,dto.username);
-            return {msg:'User successfuly created'};
-        }
-
-        catch(err){
-            console.log(err)
-        }
+        return {msg:'success'};
+       
     }
 
-    async resetPassword(dto:ResetPasswordDto){
-        const user = await this.userService.findUserByUsername(dto.username);
+    async sendEmail(email:string){
+        const user = await this.userService.findUserByEmail(email);
         if(!user){
             return ;
         }
-        await this.mailService.sendVerificationCode(user.email);
+
+        const code = await this.mailService.sendVerificationCode({id:user.id, email:user.email});
+        
         return {msg:""};
+
     }
+
+
 
 }

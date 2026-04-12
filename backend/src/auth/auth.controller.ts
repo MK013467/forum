@@ -16,7 +16,7 @@ export class AuthController{
     @Post('/signup')
     async createUser(@Body(new ValidationPipe()) createUserDto:CreateUserDto){
         
-        const user = await this.authService.createUser(createUserDto)
+        const user = await this.authService.signup(createUserDto)
         return user;
     }
 
@@ -71,11 +71,10 @@ export class AuthController{
           };
         
     }
+    @Post("send-email")
+    async sendEmail(@Body() {email}){
+      await this.authService.sendEmail(email);
 
-    @Post("reset-password")
-    async resetPassword(dto: ResetPasswordDto){
-      const result = await this.authService.resetPassword(dto);
-      
     }
 
 }
