@@ -17,6 +17,10 @@ model User {
   posts     Post[]
 
   VerificationCode VerificationCode?
+
+  Post_Like Post_Like[]
+
+  Comment_Like Comment_Like[]
 }
 
 model UserSetting {
@@ -37,6 +41,7 @@ model Post {
   author    User      @relation(fields: [authorId], references: [id])
   @@index([createsAt], map:"Post_createsAt_idx")
   @@index([authorId], map: "Post_authorId_idx")
+  Post_Like Post_Like[]
 }
 enum VerificationType {
   CHANGE_PASSWORD
@@ -71,6 +76,7 @@ model Comment {
 
   @@index([authorId], map: "Comment_authorId_fkey")
   @@index([postId], map: "Comment_postId_fkey")
+  Comment_Like Comment_Like[]
 }
 
 model Post_Like {
@@ -78,7 +84,8 @@ model Post_Like {
   userId Int
   postId Int
   type   Like_Type
-
+  user   User      @relation(fields: [userId], references: [id])  
+  post   Post      @relation(fields: [postId], references: [id]) 
   @@unique([postId, userId])
 }
 
@@ -87,7 +94,8 @@ model Comment_Like {
   type      Like_Type
   userId    Int
   commentId Int
-
+  user      User      @relation(fields: [userId], references: [id])
+  comment   Comment   @relation(fields: [commentId], references: [id]) 
   @@unique([userId, commentId])
 }
 

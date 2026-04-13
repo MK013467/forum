@@ -56,15 +56,25 @@ describe('PostService', () => {
 
       const result = await postService.deletePost(1, 1);
       expect(result).toEqual({ msg: 'success' });
-
-    })
+    });
 
     it("delete post throwing error for non existing postId", async()=> {
         mockPrismaService.post.findUnique.mockResolvedValue(null);
         await expect(
           postService.deletePost(1,  2)
         ).rejects.toThrow();
-
+    })
+ 
+    it("delete post throwing error for authorId != request userId" , async()=>{
+      mockPrismaService.post.findUnique.mockResolvedValue({
+        id:1, 
+        title:"title", 
+        content:"content",
+        authorId:1,
+      })
+      await expect(
+        postService.deletePost(1,2)
+      ).rejects.toThrow()
     })
 
 
