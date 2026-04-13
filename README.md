@@ -11,6 +11,9 @@ A Reddit-like social media application built with React on the frontend and Nest
 - Desktop
 <img width="500" height="537" alt="desktop"  src="https://github.com/user-attachments/assets/f1192988-783f-442a-9222-b97e35cab3a9" />
 
+## Database Design
+<img src="./docs/erd.png" alt="ERD" width="500"/>
+
 ## Tech Stack
 - TypeScript
 - Frontend: React, React-Query, Tailwind CSS
