@@ -53,7 +53,7 @@ export class MailService {
             subject:"Verifcation Code from Forum Service",
             html:""
         })
-
+        
         return otp;
     }
 }

@@ -11,37 +11,34 @@ export class PostService {
 
 
     async getPostById(id:number) {
-        try{
-            const post = this.prisma.post.update({
-                include:{
-                    author:{
-                        select:{
-                            username:true
-                        }
-                    },
-                    comments:{
-                        include:{
-                            author:{
-                                select: {username:true}
-                            }
-                        }
-                    }
-                }
-                ,
-                where:{
-                    id:id
-                },
-                data:{
-                    views:{
-                        increment:1
-                    }
-                }
-            });
-            return post;
-        }
-        catch(err){
-            throw new NotFoundException(`${id} of the post does not exist`)
-        }
+      const post = this.prisma.post.update({
+          include:{
+              author:{
+                  select:{
+                      username:true
+                  }
+              },
+              comments:{
+                  include:{
+                      author:{
+                          select: {username:true}
+                      }
+                  }
+              }
+          }
+          ,
+          where:{
+              id:id
+          },
+          data:{
+              views:{
+                  increment:1
+              }
+          }
+      });
+
+      return post;
+        
     }
 
 
@@ -107,10 +104,6 @@ export class PostService {
         };
       }
 
-    
-
-
-
     async createPost(postdto : Postdto, id:number) {
 
         //createdAt is handled by prisma schema
@@ -135,15 +128,17 @@ export class PostService {
             throw new ForbiddenException('You cannot edit this post');
         }
 
-        return await this.prisma.post.update({
+        await this.prisma.post.update({
             where:{
                 id: id
             },
             data:updatepostdto
         })
+
+        return {msg:"success"};
     }
 
-    async deletePost(id:number , userId:number){
+    async deletePost(id , userId){
         const post = await this.prisma.post.findUnique({
             where:{
                 id:id
@@ -161,17 +156,22 @@ export class PostService {
           this.prisma.post.delete({ where: { id } }),
         ]);
 
-        return result;
-
+        return {msg:"success"};
     }
     
     async handlePostlike(userId:number , postId:number){
     const post = await this.prisma.post.findUnique({
         where:{ id:postId}
-        })
-}
-   
-    getAllPost() {
-        
-    }
+     });
+     if(!post) throw new NotFoundException('Post not found');
+     await this.prisma.post.update({
+        where:{
+          id:post.id
+        },
+        data:{
+          likes:{increment:1}
+        }
+     });
+     return {msg:"success"};
+  }
 }

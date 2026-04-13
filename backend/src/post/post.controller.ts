@@ -44,16 +44,16 @@ export class PostController {
 
     @UseGuards(AuthenticatedGuard)
     @Delete(":id")
-    async deletePost(@Param('id', ParseIntPipe) id, @Req() req ){
-        const result = await this.postService.deletePost(id, req.user.id);
+    async deletePost(@Param('id', ParseIntPipe) id, @Req() req:Request ){
+        const result = await this.postService.deletePost(id, (req as any).user.id);
         return result;
     }
 
-    @UseGuards(AuthenticatedGuard)
-    @UseInterceptors(FileInterceptor('file '))
-    @Post("/:id/upload-file")
-    async uploadImageToPost ( @UploadedFile() file:Express.Multer.File , @Param('id', ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req): Promise<void>{
+    // @UseGuards(AuthenticatedGuard)
+    // @UseInterceptors(FileInterceptor('file '))
+    // @Post("/:id/upload-file")
+    // async uploadImageToPost ( @UploadedFile() file:Express.Multer.File , @Param('id', ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req): Promise<void>{
 
-    }
+    // }
 
 }
