@@ -1,7 +1,7 @@
 import { api } from '../../api'
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
-import { useQuery } from '@tanstack/react-query';
+import {  useSuspenseQuery } from '@tanstack/react-query';
 import { CiSearch } from "react-icons/ci";
 import { useState } from 'react';
 import { useAuthStore } from 'src/store/useAuthStore';
@@ -131,10 +131,9 @@ const PostsPage = () => {
 
   const navigate = useNavigate();
 
-  const { data: response, isLoading, isError, error} = useQuery<PostResponse>({
+  const { data: response, isError, error} = useSuspenseQuery<PostResponse>({
     queryKey: ['posts', page, searchBy, searchField],
     queryFn: () => fetchPost({page,searchBy,searchField}),
-    placeholderData: (previousData) => previousData,
   });
 
   const posts = response?.posts ?? [];
@@ -167,7 +166,6 @@ const PostsPage = () => {
     if (e.key === 'Enter') handleSearch();
   };
 
-  if (isLoading) return <div className="flex justify-center items-center min-h-screen text-gray-400">Loading...</div>;
   if (isError) return <div className="flex justify-center items-center min-h-screen text-red-400">{error instanceof Error ? error.message : 'Failed to load posts'}</div>;
 
   const paginationProps = { page, totalPages, onPrev: toPrevPage, onNext: toNextPage, onPage: toSomePage };

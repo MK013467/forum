@@ -4,7 +4,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z} from 'zod';
 import { MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useQuery , useMutation, useQueryClient } from '@tanstack/react-query';
+import {   useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useAuthStore } from 'src/store/useAuthStore';
 
@@ -62,7 +62,7 @@ const OnePostPage = () => {
   const [isEditing , setIsEditing] = useState<boolean>(false);
 
  
-  const{data:post,isLoading, isError, error} = useQuery<Post>({
+  const{data:post, isError, error} = useSuspenseQuery<Post>({
      queryKey:['post',postId],
      queryFn: () =>fetchPost(Number(postId))
 })
@@ -226,7 +226,6 @@ const OnePostPage = () => {
     }
 
     if(isError) return <div> Something went wrong {error.message}</div>
-    if (isLoading) return <div>Loading...</div>;
 
     else{
 

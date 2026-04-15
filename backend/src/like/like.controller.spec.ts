@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LikeController } from './like.controller';
+import { LikeService } from './like.service';
 
 describe('LikeController', () => {
   let controller: LikeController;
@@ -7,6 +8,15 @@ describe('LikeController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LikeController],
+      providers: [
+        {
+          provide: LikeService,
+          useValue: {
+            updatePostLike: jest.fn(),
+            updateCommentLike: jest.fn(),
+          },
+        },
+      ]
     }).compile();
 
     controller = module.get<LikeController>(LikeController);
