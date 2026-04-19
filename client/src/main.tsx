@@ -20,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
 
   <StrictMode>
     <ErrorBoundary FallbackComponent={RootErrorPage}>
+      
       <ToastContainer 
         position='bottom-center'
         autoClose={2000}

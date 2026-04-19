@@ -16,6 +16,7 @@ model User {
   comments  Comment[]
   posts     Post[]
 
+
   VerificationCode VerificationCode?
 
   Post_Like Post_Like[]
@@ -39,9 +40,11 @@ model Post {
   authorId  Int
   comments  Comment[]
   author    User      @relation(fields: [authorId], references: [id])
+  Post_Like Post_Like[]
+  embeddings Json?
   @@index([createsAt], map:"Post_createsAt_idx")
   @@index([authorId], map: "Post_authorId_idx")
-  Post_Like Post_Like[]
+  
 }
 enum VerificationType {
   CHANGE_PASSWORD
