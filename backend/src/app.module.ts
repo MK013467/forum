@@ -14,6 +14,8 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app/app.controller';
 import { MailModule } from './mail/mail.module';
+import { EmbeddingService } from './embedding/embedding.service';
+import { RecommendationService } from './recommendation/recommendation.service';
 
 @Module({
   imports: [ 
@@ -34,6 +36,6 @@ import { MailModule } from './mail/mail.module';
     rootPath: join(__dirname, '..', 'client', 'dist'),
   }), PostModule, S3Module, CommentModule, LikeModule, MailModule],
   controllers: [AppController],
-  providers: [],
+  providers: [EmbeddingService, RecommendationService],
 })
 export class AppModule {}
