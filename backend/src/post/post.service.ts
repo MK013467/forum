@@ -105,6 +105,14 @@ export class PostService {
       }
 
     async createPost(postdto : Postdto, id:number) {
+        const post = await this.prisma.post.findUnique({
+          where:{
+              title:postdto.title
+          },
+      });
+
+      if(!post) throw new Error("Post Title is already taken!");
+
 
         //createdAt is handled by prisma schema
         const posts = this.prisma.post.create({data:{

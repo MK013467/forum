@@ -32,7 +32,7 @@ model UserSetting {
 
 model Post {
   id        Int       @id @default(autoincrement())
-  title     String    @db.VarChar(300)
+  title     String    @unique @db.VarChar(300)
   content   String?   @db.VarChar(10000)
   createsAt DateTime  @default(now())
   views     Int       @default(0)

@@ -16,6 +16,7 @@ export class RecommendationService {
         model: this.model,
         inputs: text,
       });
+      
       return result as number[];
     }
 }
