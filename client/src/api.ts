@@ -17,6 +17,6 @@ import axios from "axios";
     },
     (err) => {
       console.log(err);
-      return err;
+      return Promise.reject(err);
     }
 );

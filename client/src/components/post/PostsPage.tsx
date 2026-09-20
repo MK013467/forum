@@ -34,12 +34,9 @@ const fetchPost = async ({ page, searchBy, searchField }: PostRequest) => {
     params.searchBy = searchBy;
     params.searchField = searchField.trim();
   }
-  try{
     const result = await api.get('/post', { params });
     return result.data;
-  }
-  catch(err){
-  }
+  
 };
 
 const formatDate = (date: string) => {
