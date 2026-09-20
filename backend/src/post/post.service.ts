@@ -85,6 +85,9 @@ export class PostService {
             },
           },
         },
+       omit: {
+          embeddings: true,
+        },
         orderBy: [
           orderByField ? { [orderByField]: 'desc' } : { createsAt: 'desc' },
         ],
