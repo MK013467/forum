@@ -30,7 +30,6 @@ type userForm = z.infer<typeof SignUpUserFormSchema>;
 const SignUpUser = () => {
 
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { register , handleSubmit, formState: {errors, isValid} } = useForm<userForm>({
     resolver: zodResolver(SignUpUserFormSchema),

@@ -42,9 +42,11 @@ model Post {
   author    User      @relation(fields: [authorId], references: [id])
   Post_Like Post_Like[]
   embeddings Json?
+  
   @@index([createsAt], map:"Post_createsAt_idx")
   @@index([authorId], map: "Post_authorId_idx")
-  
+  @@index([views])      
+  @@index([likes])      
 }
 enum VerificationType {
   CHANGE_PASSWORD
@@ -62,7 +64,8 @@ model VerificationCode {
   updatesAt  DateTime? @updatedAt
   expiresAt  DateTime
   requestNum Int       @default(1)
-    @@unique([userId, type])
+  @@unique([userId, type])
+
 }
 
 
@@ -76,10 +79,9 @@ model Comment {
   postId    Int
   author    User     @relation(fields: [authorId], references: [id])
   ownerPost Post     @relation(fields: [postId], references: [id])
-
+  Comment_Like Comment_Like[]
   @@index([authorId], map: "Comment_authorId_fkey")
   @@index([postId], map: "Comment_postId_fkey")
-  Comment_Like Comment_Like[]
 }
 
 model Post_Like {
