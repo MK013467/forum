@@ -1,4 +1,19 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UnauthorizedException,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 import { Postdto } from './dto/Post.dto';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
@@ -8,52 +23,59 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
 export class PostController {
-    constructor(private postService:PostService){}
+  constructor(private postService: PostService) {}
 
-    @Get()
-    async getPosts(@Query() query:GetPostDto){
-        const result = await this.postService.getPosts(query);
-        return result;
+  @Get()
+  async getPosts(@Query() query: GetPostDto) {
+    const result = await this.postService.getPosts(query);
+    return result;
+  }
+
+  @Get(':id')
+  async getPostId(@Param('id', ParseIntPipe) id) {
+    const post = await this.postService.getPostById(id);
+    return post;
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post()
+  async createPost(@Body() postdto: Postdto, @Req() req: any) {
+    if (!req.user) throw new UnauthorizedException('');
+
+    const id = req.user.id;
+
+    const post = await this.postService.createPost(postdto, id);
+    return post;
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Patch(':id')
+  async updatePost(
+    @Param('id', ParseIntPipe) id,
+    @Body() updatepostdto: UpdatePostDto,
+    @Req() req,
+  ) {
+    const post = await this.postService.updatePost(
+      +id,
+      updatepostdto,
+      req.user.id,
+    );
+    {
+      return post;
     }
+  }
 
-    @Get(':id')
-    async getPostId(@Param('id', ParseIntPipe) id){
-        const post = await this.postService.getPostById(id);
-        return post;
-    }
+  @UseGuards(AuthenticatedGuard)
+  @Delete(':id')
+  async deletePost(@Param('id', ParseIntPipe) id, @Req() req: Request) {
+    const result = await this.postService.deletePost(id, (req as any).user.id);
+    return result;
+  }
 
-    
-    @UseGuards(AuthenticatedGuard)
-    @Post()
-    async createPost(@Body() postdto: Postdto, @Req() req:any ){
-        if(!req.user) throw new UnauthorizedException('');
+  // @UseGuards(AuthenticatedGuard)
+  // @UseInterceptors(FileInterceptor('file '))
+  // @Post("/:id/upload-file")
+  // async uploadImageToPost ( @UploadedFile() file:Express.Multer.File , @Param('id', ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req): Promise<void>{
 
-        const id = req.user.id;
-
-        const post = await this.postService.createPost(postdto, id);
-        return post;
-    }
-
-    @UseGuards(AuthenticatedGuard)
-    @Patch(":id")
-    async updatePost( @Param('id' , ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req ){
-        const post = await this.postService.updatePost(+id, updatepostdto, req.user.id);{
-            return post;
-        }
-    }
-
-    @UseGuards(AuthenticatedGuard)
-    @Delete(":id")
-    async deletePost(@Param('id', ParseIntPipe) id, @Req() req:Request ){
-        const result = await this.postService.deletePost(id, (req as any).user.id);
-        return result;
-    }
-
-    // @UseGuards(AuthenticatedGuard)
-    // @UseInterceptors(FileInterceptor('file '))
-    // @Post("/:id/upload-file")
-    // async uploadImageToPost ( @UploadedFile() file:Express.Multer.File , @Param('id', ParseIntPipe) id,  @Body() updatepostdto:UpdatePostDto, @Req() req): Promise<void>{
-
-    // }
-
+  // }
 }

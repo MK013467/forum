@@ -1,7 +1,7 @@
-export class Postdto{
-    title:string
-    content:string
-    createdAt:Date
-    views:number
-    likes:number    
+export class Postdto {
+  title: string;
+  content: string;
+  createdAt: Date;
+  views: number;
+  likes: number;
 }

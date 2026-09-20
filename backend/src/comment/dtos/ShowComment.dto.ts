@@ -1,3 +1,3 @@
-export class ShowCommentDto{
-    postId: number
+export class ShowCommentDto {
+  postId: number;
 }

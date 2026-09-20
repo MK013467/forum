@@ -16,7 +16,7 @@ describe('LikeController', () => {
             updateCommentLike: jest.fn(),
           },
         },
-      ]
+      ],
     }).compile();
 
     controller = module.get<LikeController>(LikeController);

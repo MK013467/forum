@@ -22,15 +22,10 @@ describe('AppController (e2e)', () => {
 
   // basic test
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello');
+    return request(app.getHttpServer()).get('/').expect(200).expect('Hello');
   });
 
-  it('/ (GET POST)', ()=> {
-    return request(app.getHttpServer())
-      .get("/post")
-      .expect(200)
-  })
+  it('/ (GET POST)', () => {
+    return request(app.getHttpServer()).get('/post').expect(200);
+  });
 });

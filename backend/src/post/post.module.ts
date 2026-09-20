@@ -6,9 +6,9 @@ import { AuthModule } from 'src/auth/AuthModule';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports:[PrismaModule, AuthModule , UsersModule],
+  imports: [PrismaModule, AuthModule, UsersModule],
   providers: [PostService],
   controllers: [PostController],
-  exports:[PostService]
+  exports: [PostService],
 })
 export class PostModule {}

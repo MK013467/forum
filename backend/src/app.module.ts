@@ -18,23 +18,33 @@ import { EmbeddingService } from './embedding/embedding.service';
 import { RecommendationService } from './recommendation/recommendation.service';
 
 @Module({
-  imports: [ 
+  imports: [
     ConfigModule.forRoot(),
     CacheModule.register({
-      max:100, 
+      max: 100,
       // 1h
-      ttl:60*60*1000,
-      isGlobal:true
+      ttl: 60 * 60 * 1000,
+      isGlobal: true,
     }),
     ThrottlerModule.forRoot([
-    {
-      ttl: 60_000,
-      limit: 60,
-    },]),
+      {
+        ttl: 60_000,
+        limit: 60,
+      },
+    ]),
     PassportModule.register({ session: true }),
-    UsersModule, PrismaModule, AuthModule, ServeStaticModule.forRoot({
-    rootPath: join(__dirname, '..', 'client', 'dist'),
-  }), PostModule, S3Module, CommentModule, LikeModule, MailModule],
+    UsersModule,
+    PrismaModule,
+    AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client', 'dist'),
+    }),
+    PostModule,
+    S3Module,
+    CommentModule,
+    LikeModule,
+    MailModule,
+  ],
   controllers: [AppController],
   providers: [EmbeddingService, RecommendationService],
 })

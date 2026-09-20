@@ -4,8 +4,8 @@ import { LikeController } from './like.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   providers: [LikeService],
-  controllers: [LikeController]
+  controllers: [LikeController],
 })
 export class LikeModule {}
