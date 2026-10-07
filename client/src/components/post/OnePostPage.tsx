@@ -34,6 +34,10 @@ interface Comment{
     username:string
   }
 }
+
+type LikeMutationResult = {
+  changed: boolean;
+};
 const updatePostFormSchema = z.object( {
   title: z.string().min(1, 'title is required'),
   content: z.string()
@@ -125,10 +129,12 @@ const OnePostPage = () => {
 
     const postLikeMutation = useMutation({
       mutationFn: async({type}: {type:'like'|'dislike'} ) => {
-        return await api.post("/like/post", {
+        const response = await api.post<LikeMutationResult>("/like/post", {
           targetId: postId,
           type:type
-        })
+        });
+
+        return response.data;
       }
       ,
 
@@ -150,7 +156,7 @@ const OnePostPage = () => {
 
 
       onSuccess: () => {
-        queryClient.invalidateQueries({queryKey:['post' , postId]})
+        queryClient.invalidateQueries({ queryKey: ['post', postId] });
       },
 
       onError: ( err, variable, context) =>{
@@ -158,10 +164,6 @@ const OnePostPage = () => {
         console.log(err)
       },
 
-      onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ['post', postId] });
-
-      }
     })
 
     const commentLikeMutation = useMutation({

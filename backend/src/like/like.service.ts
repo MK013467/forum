@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Like_Type } from '@prisma/client';
+import { Like_Type, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 type UpdateLikeInput = {
@@ -13,121 +13,81 @@ export class LikeService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updatePostLike(input: UpdateLikeInput) {
-    const existingLike = await this.prisma.post_Like.findUnique({
-      where: {
-        postId_userId: { userId: input.userId, postId: input.targetId },
-      },
-    });
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        const existingLike = await tx.post_Like.findUnique({
+          where: {
+            userId_postId: { userId: input.userId, postId: input.targetId },
+          },
+        });
 
-    //Like does not exist
-    if (input.type === 'like') {
-      //If user havent liked the post, we simply created a new like in the like table
-      // with type == 'like'
-      // and update #of likes for the target post
-      if (!existingLike) {
-        const result = await this.prisma.$transaction([
-          this.prisma.post_Like.create({
+        // Clicking the existing action again cancels it.
+        if (existingLike?.type === input.type) {
+          await tx.post_Like.delete({
+            where: {
+              userId_postId: { userId: input.userId, postId: input.targetId },
+            },
+          });
+
+          const post = await tx.post.update({
+            where: { id: input.targetId },
+            data: {
+              likes: { increment: input.type === 'like' ? -1 : 1 },
+            },
+            select: { id: true, likes: true },
+          });
+
+          return { post };
+        }
+
+        if (!existingLike) {
+          await tx.post_Like.create({
             data: {
               userId: input.userId,
               postId: input.targetId,
               type: input.type,
             },
-          }),
-          this.prisma.post.update({
+          });
+
+          const post = await tx.post.update({
             where: { id: input.targetId },
             data: {
-              likes: {
-                increment: 1,
-              },
+              likes: { increment: input.type === 'like' ? 1 : -1 },
             },
-          }),
-        ]);
+            select: { id: true, likes: true },
+          });
 
-        return result;
+          return { post };
+        }
+
+        await tx.post_Like.update({
+          where: {
+            userId_postId: { userId: input.userId, postId: input.targetId },
+          },
+          data: { type: input.type },
+        });
+
+        const post = await tx.post.update({
+          where: { id: input.targetId },
+          data: {
+            likes: { increment: input.type === 'like' ? 2 : -2 },
+          },
+          select: { id: true, likes: true },
+        });
+
+        return { post };
+      });
+    } catch (error) {
+      // A concurrent duplicate insert loses the UNIQUE race. Its transaction
+      // rolls back, so the winning request is the only one that changes likes.
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        return {  };
       }
 
-      //If there is existing like there are basically two possibilities
-      //1. User had liked this post and pushed like button
-      //2. User had disliked this post and pushed like button
-      //For both of cases, our goal is to change our tables so that it is same has user haven't done anything to the post
-      //To achive this we do the following,
-      //For the first case we delete a row in the like table decrement and decrement # of likes for the target post "
-      //For the second case we delete a row in the second post and increment # of likes for the target post"
-      else {
-        const likeChange =
-          existingLike.type === 'like' ? 'decrement' : 'increment';
-        const result = await this.prisma.$transaction([
-          this.prisma.post_Like.delete({
-            where: {
-              postId_userId: {
-                postId: input.targetId,
-                userId: input.userId,
-              },
-            },
-          }),
-          this.prisma.post.update({
-            where: { id: input.targetId },
-            data: {
-              likes: {
-                [likeChange]: 1,
-              },
-            },
-          }),
-        ]);
-
-        return result;
-      }
-    }
-
-    //when input type === 'dislike'
-    else {
-      if (!existingLike) {
-        const result = await this.prisma.$transaction([
-          this.prisma.post_Like.create({
-            data: {
-              userId: input.userId,
-              postId: input.targetId,
-              type: input.type,
-            },
-          }),
-          this.prisma.post.update({
-            where: { id: input.targetId },
-            data: {
-              likes: {
-                decrement: 1,
-              },
-            },
-          }),
-        ]);
-
-        return result;
-      }
-
-      //similar logic applies like above applies
-      else {
-        const likeChange =
-          existingLike.type === 'like' ? 'decrement' : 'increment';
-        const result = await this.prisma.$transaction([
-          this.prisma.post_Like.delete({
-            where: {
-              postId_userId: {
-                postId: input.targetId,
-                userId: input.userId,
-              },
-            },
-          }),
-          this.prisma.post.update({
-            where: { id: input.targetId },
-            data: {
-              likes: {
-                [likeChange]: 1,
-              },
-            },
-          }),
-        ]);
-
-        return result;
-      }
+      throw error;
     }
   }
 
@@ -213,7 +173,7 @@ export class LikeService {
         return result;
       }
 
-      //similar logic applies like above applies
+      //similar logic applies like above
       else {
         const likeChange =
           existingLike.type === 'like' ? 'decrement' : 'increment';

@@ -91,7 +91,7 @@ model Post_Like {
   type   Like_Type
   user   User      @relation(fields: [userId], references: [id])  
   post   Post      @relation(fields: [postId], references: [id]) 
-  @@unique([postId, userId])
+  @@unique([userId, postId])
 }
 
 model Comment_Like {
