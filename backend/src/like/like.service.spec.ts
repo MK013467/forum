@@ -42,7 +42,7 @@ describe('LikeService', () => {
         targetId: 10,
         type: Like_Type.like,
       }),
-    ).resolves.toEqual({ changed: true, post: { id: 10, likes: 1 } });
+    ).resolves.toEqual({ post: { id: 10, likes: 1 } });
 
     expect(transaction.post_Like.create).toHaveBeenCalledWith({
       data: { userId: 1, postId: 10, type: Like_Type.like },
@@ -67,7 +67,7 @@ describe('LikeService', () => {
         targetId: 10,
         type: Like_Type.like,
       }),
-    ).resolves.toEqual({ changed: true, post: { id: 10, likes: 0 } });
+    ).resolves.toEqual({ post: { id: 10, likes: 0 } });
 
     expect(transaction.post_Like.create).not.toHaveBeenCalled();
     expect(transaction.post_Like.delete).toHaveBeenCalledWith({

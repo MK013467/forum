@@ -5,6 +5,7 @@
     "backend"
   ],
   "devDependencies": {
+    "@types/k6": "^2.3.0",
     "concurrently": "^9.2.1",
     "prettier": "^3.9.10"
   },
