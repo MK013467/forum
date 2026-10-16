@@ -55,7 +55,9 @@ describe('LikeService', () => {
   });
 
   it('cancels an existing like and decrements the post count', async () => {
-    transaction.post_Like.findUnique.mockResolvedValue({ type: Like_Type.like });
+    transaction.post_Like.findUnique.mockResolvedValue({
+      type: Like_Type.like,
+    });
     transaction.post_Like.delete.mockResolvedValue({});
     transaction.post.update.mockResolvedValue({ id: 10, likes: 0 });
 

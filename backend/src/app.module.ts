@@ -36,9 +36,6 @@ import { RecommendationService } from './recommendation/recommendation.service';
     UsersModule,
     PrismaModule,
     AuthModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client', 'dist'),
-    }),
     PostModule,
     S3Module,
     CommentModule,

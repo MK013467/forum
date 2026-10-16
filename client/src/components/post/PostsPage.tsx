@@ -1,8 +1,8 @@
-import { api } from '../../api'
+import { api } from '../../api';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
-import {  useSuspenseQuery } from '@tanstack/react-query';
-import { CiSearch } from "react-icons/ci";
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { CiSearch } from 'react-icons/ci';
 import { useState } from 'react';
 import { useAuthStore } from 'src/store/useAuthStore';
 
@@ -23,9 +23,9 @@ interface PostResponse {
 }
 
 interface PostRequest {
-  page:number;
-  searchBy?:string
-  searchField?:string
+  page: number;
+  searchBy?: string;
+  searchField?: string;
 }
 const fetchPost = async ({ page, searchBy, searchField }: PostRequest) => {
   const params: Record<string, string | number> = { page };
@@ -34,9 +34,8 @@ const fetchPost = async ({ page, searchBy, searchField }: PostRequest) => {
     params.searchBy = searchBy;
     params.searchField = searchField.trim();
   }
-    const result = await api.get('/post', { params });
-    return result.data;
-  
+  const result = await api.get('/post', { params });
+  return result.data;
 };
 
 const formatDate = (date: string) => {
@@ -45,7 +44,13 @@ const formatDate = (date: string) => {
 
 //Mobile item
 
-const PostFeedItem = ({ post, onClick }: { post: Post; onClick: () => void }) => (
+const PostFeedItem = ({
+  post,
+  onClick,
+}: {
+  post: Post;
+  onClick: () => void;
+}) => (
   <div
     onClick={onClick}
     className="flex gap-3 px-3 py-3 border-b border-gray-100 active:bg-gray-50 cursor-pointer transition-colors overflow-x-hidden"
@@ -59,7 +64,9 @@ const PostFeedItem = ({ post, onClick }: { post: Post; onClick: () => void }) =>
       </span>
       <div className="flex items-center gap-2 text-xs text-gray-400">
         <span>views {post.views}</span>
-        <span>likes <strong className="text-red-500">{post.likes}</strong></span>
+        <span>
+          likes <strong className="text-red-500">{post.likes}</strong>
+        </span>
       </div>
     </div>
   </div>
@@ -85,7 +92,9 @@ const Pagination = ({
       disabled={page === 1}
       onClick={onPrev}
       className={`flex items-center gap-1 px-2 py-1 text-sm rounded ${
-        page !== 1 ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-300 cursor-default'
+        page !== 1
+          ? 'text-gray-700 hover:bg-gray-100'
+          : 'text-gray-300 cursor-default'
       }`}
     >
       <FaChevronLeft /> prev
@@ -109,7 +118,9 @@ const Pagination = ({
       disabled={page === totalPages}
       onClick={onNext}
       className={`flex items-center gap-1 px-2 py-1 text-sm rounded ${
-        page !== totalPages ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-300 cursor-default'
+        page !== totalPages
+          ? 'text-gray-700 hover:bg-gray-100'
+          : 'text-gray-300 cursor-default'
       }`}
     >
       next <FaChevronRight />
@@ -119,7 +130,7 @@ const Pagination = ({
 
 const PostsPage = () => {
   const user = useAuthStore((state) => state.user);
-  const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams 
+  const [searchParams, setSearchParams] = useSearchParams(); // setSearchParams
   const page = Number(searchParams.get('page') || 1);
   const searchBy = searchParams.get('searchBy') || '';
   const searchField = searchParams.get('searchField') || '';
@@ -128,9 +139,13 @@ const PostsPage = () => {
 
   const navigate = useNavigate();
 
-  const { data: response, isError, error} = useSuspenseQuery<PostResponse>({
+  const {
+    data: response,
+    isError,
+    error,
+  } = useSuspenseQuery<PostResponse>({
     queryKey: ['posts', page, searchBy, searchField],
-    queryFn: () => fetchPost({page,searchBy,searchField}),
+    queryFn: () => fetchPost({ page, searchBy, searchField }),
   });
 
   const posts = response?.posts ?? [];
@@ -150,7 +165,7 @@ const PostsPage = () => {
       setSearchParams({ page: '1' });
       return;
     }
-    
+
     setSearchParams({
       page: '1',
       searchBy: localSearchBy,
@@ -163,20 +178,30 @@ const PostsPage = () => {
     if (e.key === 'Enter') handleSearch();
   };
 
-  if (isError) return <div className="flex justify-center items-center min-h-screen text-red-400">{error instanceof Error ? error.message : 'Failed to load posts'}</div>;
+  if (isError)
+    return (
+      <div className="flex justify-center items-center min-h-screen text-red-400">
+        {error instanceof Error ? error.message : 'Failed to load posts'}
+      </div>
+    );
 
-  const paginationProps = { page, totalPages, onPrev: toPrevPage, onNext: toNextPage, onPage: toSomePage };
+  const paginationProps = {
+    page,
+    totalPages,
+    onPrev: toPrevPage,
+    onNext: toNextPage,
+    onPage: toSomePage,
+  };
 
   return (
     <div className="w-full min-h-screen bg-white">
-
       {/* Mobile */}
       <div className="flex flex-col md:hidden">
-        {user && ( 
+        {user && (
           <div className="flex justify-end px-3 py-3">
             <button
               type="button"
-              onClick={() => navigate("/post/new")}
+              onClick={() => navigate('/post/new')}
               className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-800"
             >
               Create Post
@@ -184,7 +209,11 @@ const PostsPage = () => {
           </div>
         )}
         {posts.map((post) => (
-          <PostFeedItem key={post.id} post={post} onClick={() => handleClickRow(post.id)} />
+          <PostFeedItem
+            key={post.id}
+            post={post}
+            onClick={() => handleClickRow(post.id)}
+          />
         ))}
         <Pagination {...paginationProps} />
       </div>
@@ -194,16 +223,24 @@ const PostsPage = () => {
         <div className="w-4/5 flex flex-col gap-4 relative">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             {/* table */}
-            <table 
-            className="w-full text-sm">
-
+            <table className="w-full text-sm">
               <thead>
                 <tr className="border-b-2 border-gray-100 bg-gray-100">
-                  <th className="text-left py-2 px-5 text-black font-medium">Title</th>
-                  <th className="text-left py-2 px-5 text-black font-medium">Author</th>
-                  <th className="text-left py-2 px-5 text-black font-medium">Posted At</th>
-                  <th className="text-left py-2 px-5 text-black font-medium">Views</th>
-                  <th className="text-left py-2 px-5 text-black font-medium">Likes</th>
+                  <th className="text-left py-2 px-5 text-black font-medium">
+                    Title
+                  </th>
+                  <th className="text-left py-2 px-5 text-black font-medium">
+                    Author
+                  </th>
+                  <th className="text-left py-2 px-5 text-black font-medium">
+                    Posted At
+                  </th>
+                  <th className="text-left py-2 px-5 text-black font-medium">
+                    Views
+                  </th>
+                  <th className="text-left py-2 px-5 text-black font-medium">
+                    Likes
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -214,50 +251,59 @@ const PostsPage = () => {
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                   >
                     <td className="py-2 px-5 text-gray-900 w-1/2">
-                      {post.title.length < 50 ? post.title : post.title.substring(0, 50) + '...'}
+                      {post.title.length < 50
+                        ? post.title
+                        : post.title.substring(0, 50) + '...'}
                     </td>
-                    <td className="py-1 px-5 text-sm text-gray-600">{post.authorName}</td>
-                    <td className="py-1 px-5 text-sm text-gray-600">{formatDate(post.createsAt)}</td>
-                    <td className="py-1 px-5 text-sm text-gray-600">{post.views}</td>
-                    <td className="py-1 px-5 text-sm text-gray-600">{post.likes}</td>
+                    <td className="py-1 px-5 text-sm text-gray-600">
+                      {post.authorName}
+                    </td>
+                    <td className="py-1 px-5 text-sm text-gray-600">
+                      {formatDate(post.createsAt)}
+                    </td>
+                    <td className="py-1 px-5 text-sm text-gray-600">
+                      {post.views}
+                    </td>
+                    <td className="py-1 px-5 text-sm text-gray-600">
+                      {post.likes}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <div className='flex justify-center items-center'>
-
-
-            <select 
+          <div className="flex justify-center items-center">
+            <select
               name="searchBy"
               value={localSearchBy}
-              onChange={(e)=>setLocalSearchBy(e.target.value)}
-              className='pr-2'>
-            <option value="title">title</option>
-            <option value="content">content</option>
-            <option value="username">username</option>
+              onChange={(e) => setLocalSearchBy(e.target.value)}
+              className="pr-2"
+            >
+              <option value="title">title</option>
+              <option value="content">content</option>
+              <option value="username">username</option>
             </select>
 
-            <input 
-              className=''
+            <input
+              className=""
               value={localSearchField}
-              onChange={(e)=>setLocalSearchField(e.target.value)}
-              onKeyDown={handleEnterKeyDown}/>
-              <button type='button'
-                onClick={handleSearch}
-                >
-                <CiSearch/>
-              </button>
+              onChange={(e) => setLocalSearchField(e.target.value)}
+              onKeyDown={handleEnterKeyDown}
+            />
+            <button type="button" onClick={handleSearch}>
+              <CiSearch />
+            </button>
 
-              {user&&
-               (<button
+            {user && (
+              <button
                 type="button"
-                onClick={() => navigate("/post/new")}
+                onClick={() => navigate('/post/new')}
                 className="px-4 py-2 absolute right-0 bottom-4 rounded-lg bg-blue-500 text-white hover:bg-blue-800 ml-10"
               >
-              Create Post
-              </button>)}
+                Create Post
+              </button>
+            )}
           </div>
           <Pagination {...paginationProps} />
         </div>

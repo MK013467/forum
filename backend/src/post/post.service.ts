@@ -85,7 +85,7 @@ export class PostService {
             },
           },
         },
-       omit: {
+        omit: {
           embeddings: true,
         },
         orderBy: [

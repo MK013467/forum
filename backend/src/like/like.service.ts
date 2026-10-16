@@ -84,7 +84,7 @@ export class LikeService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        return {  };
+        return {};
       }
 
       throw error;

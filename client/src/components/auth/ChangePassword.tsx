@@ -13,7 +13,10 @@ const changePasswordSchema = z
       .string()
       .min(8, 'Must be at least 8 characters')
       .max(20, 'Must not exceed 20 characters')
-      .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Must contain at least one special character')
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        'Must contain at least one special character',
+      )
       .regex(/[0-9]/, 'Must contain at least one number'),
     confirmPassword: z.string().min(1, 'Please confirm your new password'),
   })
@@ -75,7 +78,9 @@ const ChangePasswordPage = () => {
   return (
     <div className="w-full flex justify-center px-4 py-10">
       <div className="w-full max-w-xl bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Change Password</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+          Change Password
+        </h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div>

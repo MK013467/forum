@@ -1,22 +1,21 @@
-import axios from "axios";
+import axios from 'axios';
 
-  export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    withCredentials: true,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  api.interceptors.response.use(
-    
-    (response) => {
-        return {
-          ...response,
-          data:response.data.data
-        }
-    },
-    (err) => {
-      console.log(err);
-      return Promise.reject(err);
-    }
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+api.interceptors.response.use(
+  (response) => {
+    return {
+      ...response,
+      data: response.data.data,
+    };
+  },
+  (err) => {
+    console.log(err);
+    return Promise.reject(err);
+  },
 );

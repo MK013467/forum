@@ -13,3 +13,4 @@ client/node_modules
 client/dist/*
 client/README.md
 clinet/src/vite-env.d.ts
+client/.env

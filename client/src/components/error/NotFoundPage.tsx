@@ -3,22 +3,14 @@ import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 export const NotFoundPage = () => {
   const error = useRouteError();
 
-  if(isRouteErrorResponse(error)){
-    if(error.status = 404){
-      return (
-        <div>
-
-        </div>
-      )
+  if (isRouteErrorResponse(error)) {
+    if ((error.status = 404)) {
+      return <div></div>;
     }
 
-    if(error.status === 401){
-      return (
-        <div></div>
-      )
+    if (error.status === 401) {
+      return <div></div>;
     }
-
-
   }
 
   return (
@@ -27,6 +19,6 @@ export const NotFoundPage = () => {
       <p className="mt-3 text-gray-600">Failed to load this post.</p>
     </div>
   );
-}
+};
 
 export default NotFoundPage;

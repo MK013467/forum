@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-
     "baseUrl": ".",
     "paths": {
       "@shared/*": ["../shared/*"]
@@ -26,7 +25,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["src" , "src/vite-env.d.ts", "../shared"]
+  "include": ["src", "src/vite-env.d.ts", "../shared"]
 }
