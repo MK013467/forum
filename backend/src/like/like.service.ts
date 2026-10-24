@@ -13,82 +13,99 @@ export class LikeService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updatePostLike(input: UpdateLikeInput) {
-    try {
-      return await this.prisma.$transaction(async (tx) => {
-        const existingLike = await tx.post_Like.findUnique({
-          where: {
-            userId_postId: { userId: input.userId, postId: input.targetId },
-          },
-        });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await this.prisma.$transaction(async (tx) => {
+          await tx.$queryRaw`
+            SELECT id FROM Post WHERE id = ${input.targetId} FOR UPDATE
+          `;
 
-        // Clicking the existing action again cancels it.
-        if (existingLike?.type === input.type) {
-          await tx.post_Like.delete({
+          const existingLike = await tx.post_Like.findUnique({
             where: {
               userId_postId: { userId: input.userId, postId: input.targetId },
             },
           });
 
+          // Clicking the existing action again cancels it.
+          if (existingLike?.type === input.type) {
+            await tx.post_Like.delete({
+              where: {
+                userId_postId: { userId: input.userId, postId: input.targetId },
+              },
+            });
+
+            const post = await tx.post.update({
+              where: { id: input.targetId },
+              data: {
+                likes: { increment: input.type === 'like' ? -1 : 1 },
+              },
+              select: { id: true, likes: true },
+            });
+
+            return { post };
+          }
+
+          if (!existingLike) {
+            await tx.post_Like.create({
+              data: {
+                userId: input.userId,
+                postId: input.targetId,
+                type: input.type,
+              },
+            });
+
+            const post = await tx.post.update({
+              where: { id: input.targetId },
+              data: {
+                likes: { increment: input.type === 'like' ? 1 : -1 },
+              },
+              select: { id: true, likes: true },
+            });
+
+            return { post };
+          }
+
+          await tx.post_Like.update({
+            where: {
+              userId_postId: { userId: input.userId, postId: input.targetId },
+            },
+            data: { type: input.type },
+          });
+
           const post = await tx.post.update({
             where: { id: input.targetId },
             data: {
-              likes: { increment: input.type === 'like' ? -1 : 1 },
+              likes: { increment: input.type === 'like' ? 2 : -2 },
             },
             select: { id: true, likes: true },
           });
 
           return { post };
+        });
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2002'
+        ) {
+          return {};
         }
 
-        if (!existingLike) {
-          await tx.post_Like.create({
-            data: {
-              userId: input.userId,
-              postId: input.targetId,
-              type: input.type,
-            },
-          });
-
-          const post = await tx.post.update({
-            where: { id: input.targetId },
-            data: {
-              likes: { increment: input.type === 'like' ? 1 : -1 },
-            },
-            select: { id: true, likes: true },
-          });
-
-          return { post };
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2034' &&
+          attempt < 2
+        ) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 10 * (attempt + 1)),
+          );
+          continue;
         }
 
-        await tx.post_Like.update({
-          where: {
-            userId_postId: { userId: input.userId, postId: input.targetId },
-          },
-          data: { type: input.type },
-        });
-
-        const post = await tx.post.update({
-          where: { id: input.targetId },
-          data: {
-            likes: { increment: input.type === 'like' ? 2 : -2 },
-          },
-          select: { id: true, likes: true },
-        });
-
-        return { post };
-      });
-    } catch (error) {
-      // A concurrent duplicate insert loses the UNIQUE race. Its transaction
-      // rolls back, so the winning request is the only one that changes likes.
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2002'
-      ) {
-        return {};
+        throw error;
       }
-
-      throw error;
     }
+
+    throw new Error('Like transaction retry limit reached.');
   }
 
   async updateCommentLike(input: UpdateLikeInput) {

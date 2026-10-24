@@ -4,6 +4,7 @@ import { LikeService } from './like.service';
 
 describe('LikeService', () => {
   const transaction = {
+    $queryRaw: jest.fn(),
     post_Like: {
       findUnique: jest.fn(),
       create: jest.fn(),
@@ -32,6 +33,7 @@ describe('LikeService', () => {
   });
 
   it('creates the reaction and increments the post in one transaction', async () => {
+    transaction.$queryRaw.mockResolvedValue([]);
     transaction.post_Like.findUnique.mockResolvedValue(null);
     transaction.post_Like.create.mockResolvedValue({});
     transaction.post.update.mockResolvedValue({ id: 10, likes: 1 });
@@ -55,6 +57,7 @@ describe('LikeService', () => {
   });
 
   it('cancels an existing like and decrements the post count', async () => {
+    transaction.$queryRaw.mockResolvedValue([]);
     transaction.post_Like.findUnique.mockResolvedValue({
       type: Like_Type.like,
     });
