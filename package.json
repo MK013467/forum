@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "NODE_ENV=development concurrently \"npm run start:dev --prefix backend\" \"npm run dev --prefix client\"",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "k6:login": "set -a && . ./backend/.env && set +a && docker run --rm --network market-app_default -e TEST_USER_USERNAME -e TEST_USER_PASSWORD -e BASE_URL=http://nginx -v \"$PWD/tests/k6:/scripts:ro\" grafana/k6 run /scripts/login-test.ts"
   }
 }

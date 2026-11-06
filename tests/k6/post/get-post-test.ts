@@ -5,7 +5,7 @@ const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
 
 export const options = {
   vus: 10,
-  duration: 'ㄷ0s',
+  duration: '10s',
   thresholds: {
     http_req_failed: ['rate<0.01'],
     http_req_duration: ['p(95)<1000'],

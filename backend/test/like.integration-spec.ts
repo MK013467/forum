@@ -18,6 +18,7 @@ describe('LikeService integration', () => {
 
   let userId: number | undefined;
   let postId: number | undefined;
+  let userIds: number[] = [];
 
   beforeEach(async () => {
     const uniqueValue = `${Date.now()}-${Math.random()}`;
@@ -38,6 +39,7 @@ describe('LikeService integration', () => {
     });
 
     userId = user.id;
+    userIds = [user.id];
     postId = post.id;
   });
 
@@ -47,8 +49,8 @@ describe('LikeService integration', () => {
       await prisma.post.delete({ where: { id: postId } });
     }
 
-    if (userId) {
-      await prisma.user.delete({ where: { id: userId } });
+    if (userIds.length > 0) {
+      await prisma.user.deleteMany({ where: { id: { in: userIds } } });
     }
   });
 
@@ -76,5 +78,39 @@ describe('LikeService integration', () => {
 
     expect(postLikes.length).toBeLessThanOrEqual(1);
     expect(post.likes).toBe(postLikes.length);
+  });
+
+  it('keeps the like count correct when different users like concurrently', async () => {
+    const uniqueValue = `${Date.now()}-${Math.random()}`;
+    const users = await Promise.all(
+      Array.from({ length: 10 }, (_, index) =>
+        prisma.user.create({
+          data: {
+            username: `like-concurrency-${uniqueValue}-${index}`,
+            email: `like-concurrency-${uniqueValue}-${index}@example.com`,
+            password: 'not-a-real-password',
+          },
+        }),
+      ),
+    );
+    userIds.push(...users.map((user) => user.id));
+
+    await Promise.all(
+      users.map((user) =>
+        likeService.updatePostLike({
+          userId: user.id,
+          targetId: postId!,
+          type: Like_Type.like,
+        }),
+      ),
+    );
+
+    const [post, postLikes] = await Promise.all([
+      prisma.post.findUniqueOrThrow({ where: { id: postId! } }),
+      prisma.post_Like.findMany({ where: { postId: postId! } }),
+    ]);
+
+    expect(postLikes).toHaveLength(users.length);
+    expect(post.likes).toBe(users.length);
   });
 });
