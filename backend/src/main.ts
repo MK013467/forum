@@ -23,7 +23,7 @@ export async function setUpSession(app: NestExpressApplication) {
   });
 
   await redisClient.connect();
-  let redisStore = new RedisStore({
+  const redisStore = new RedisStore({
     client: redisClient,
     prefix: 'myapp:',
     ttl: 60 * 60,
