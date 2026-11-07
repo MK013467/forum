@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend-check:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: mysql://u:@localhost:3306/db
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm CI
+      - run: npm run format:check 
+      - run: npx prisma generate
+        working-directory: backend
+      - run: npx tsc --noEmit
+        working-directory: backend
+      - run: npm run build
+        working-directory: backend
+
+  client-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci 
+      - run: npm tsc -b
+        working-directory: client
