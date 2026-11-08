@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm CI
-      - run: npm run format:check 
+      - run: npm ci
+      - run: npm run format:check
       - run: npx prisma generate
         working-directory: backend
       - run: npx tsc --noEmit
@@ -33,6 +33,6 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci 
-      - run: npm tsc -b
+      - run: npm ci
+      - run: npx tsc -b
         working-directory: client
