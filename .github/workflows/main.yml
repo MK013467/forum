@@ -34,5 +34,5 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npx tsc -b
+      - run: npm run build --workspace client
         working-directory: client
