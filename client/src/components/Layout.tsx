@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
-import { useAuthStore } from 'src/store/useAuthStore';
 import { Suspense } from 'react';
 import { Loading } from './Loading';
 

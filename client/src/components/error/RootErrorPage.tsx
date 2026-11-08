@@ -1,8 +1,7 @@
-import React from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { Link } from 'react-router-dom';
 
-const RootErrorPage = ({ error, resetErrorBoundary }: FallbackProps) => {
+const RootErrorPage = ({ resetErrorBoundary }: FallbackProps) => {
   console.log('Get instructed');
   return (
     <div className="w-full min-h-screen flex items-center justify-center px-6">

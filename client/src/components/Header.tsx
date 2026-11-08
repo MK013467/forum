@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUserLarge } from 'react-icons/fa6';
-import { api } from '../api';
+import { api, getApiErrorMessage } from '../api';
 import { useAuthStore } from 'src/store/useAuthStore';
 
 const Headers = () => {
@@ -13,8 +13,8 @@ const Headers = () => {
     try {
       await api.post('/auth/logout');
       navigate('/');
-    } catch (err: any) {
-      console.log(err.response?.msg);
+    } catch (err) {
+      console.log(getApiErrorMessage(err));
     } finally {
       logout();
     }

@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 import { api } from '../../api';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { GoEye, GoEyeClosed } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
@@ -54,8 +55,8 @@ const SignUpUser = () => {
       setTimeout(() => {
         navigate('/');
       }, 500);
-    } catch (error: any) {
-      console.error(error.response?.data);
+    } catch (error) {
+      console.error(axios.isAxiosError(error) ? error.response?.data : error);
     }
   };
 

@@ -9,7 +9,7 @@ const CheckVerificationCodePage = () => {
 
   const handleSubmit = async () => {
     const code = otp.join('');
-    const res = await api.post('/auth/verify-code', { code: code });
+    await api.post('/auth/verify-code', { code: code });
   };
 
   function handleChange(value: string, index: number): void {

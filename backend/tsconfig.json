@@ -18,7 +18,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
-    
     // linting
   },
   "include": ["src"]
