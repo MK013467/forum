@@ -19,7 +19,7 @@ const ResetPasswordPage = () => {
       setError('');
       await api.post('/auth/send-email', { email });
       navigate(`/auth/checkvc?email=${email}`);
-    } catch (err) {
+    } catch {
       setError('Failed to send verification code. Please try again.');
     } finally {
       setLoading(false);

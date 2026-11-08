@@ -10,16 +10,14 @@ import {
   Query,
   Req,
   UnauthorizedException,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { PostService } from './post.service';
 import { Postdto } from './dto/Post.dto';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { GetPostDto } from './dto/GetPost.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
 export class PostController {
@@ -32,43 +30,43 @@ export class PostController {
   }
 
   @Get(':id')
-  async getPostId(@Param('id', ParseIntPipe) id) {
+  async getPostId(@Param('id', ParseIntPipe) id: number) {
     const post = await this.postService.getPostById(id);
     return post;
   }
 
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createPost(@Body() postdto: Postdto, @Req() req: any) {
-    if (!req.user) throw new UnauthorizedException('');
+  async createPost(@Body() postdto: Postdto, @Req() req: Request) {
+    if (!req.isAuthenticated()) throw new UnauthorizedException();
 
-    const id = req.user.id;
-
-    const post = await this.postService.createPost(postdto, id);
+    const post = await this.postService.createPost(postdto, req.user.id);
     return post;
   }
 
   @UseGuards(AuthenticatedGuard)
   @Patch(':id')
   async updatePost(
-    @Param('id', ParseIntPipe) id,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatepostdto: UpdatePostDto,
-    @Req() req,
+    @Req() req: Request,
   ) {
+    if (!req.isAuthenticated()) throw new UnauthorizedException();
+
     const post = await this.postService.updatePost(
-      +id,
+      id,
       updatepostdto,
       req.user.id,
     );
-    {
-      return post;
-    }
+    return post;
   }
 
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
-  async deletePost(@Param('id', ParseIntPipe) id, @Req() req: Request) {
-    const result = await this.postService.deletePost(id, (req as any).user.id);
+  async deletePost(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    if (!req.isAuthenticated()) throw new UnauthorizedException();
+
+    const result = await this.postService.deletePost(id, req.user.id);
     return result;
   }
 

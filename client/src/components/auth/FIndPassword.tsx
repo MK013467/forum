@@ -39,7 +39,7 @@ export default function FindPassword() {
         'If an account exists for that email, we sent a verification code.',
       );
       setCooldown(60);
-    } catch (e) {
+    } catch {
       setStep('code');
       setMsg(
         'If an account exists for that email, we sent a verification code.',
@@ -69,7 +69,7 @@ export default function FindPassword() {
       });
 
       setMsg('Code verified. You can reset your password now.');
-    } catch (e) {
+    } catch {
       setErr('Invalid or expired code. Please try again.');
     } finally {
       setVerifying(false);

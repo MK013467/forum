@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { join } from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuthModule } from './auth/AuthModule';
 import { PostModule } from './post/post.module';
 import { S3Module } from './s3/s3.module';
@@ -14,7 +12,6 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app/app.controller';
 import { MailModule } from './mail/mail.module';
-import { EmbeddingService } from './embedding/embedding.service';
 import { RecommendationService } from './recommendation/recommendation.service';
 
 @Module({
@@ -43,6 +40,6 @@ import { RecommendationService } from './recommendation/recommendation.service';
     MailModule,
   ],
   controllers: [AppController],
-  providers: [EmbeddingService, RecommendationService],
+  providers: [RecommendationService],
 })
 export class AppModule {}

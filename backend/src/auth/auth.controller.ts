@@ -2,23 +2,19 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
-  Query,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthenticatedGuard } from './passport/AuthenticatedGuard';
 import { LocalAuthGuard } from './passport/LocalAuthGuard';
-import { UsersService } from 'src/users/users.service';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
-import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { SendEmailDto } from './dto/sendEmail.dto';
+import { toError } from 'src/common/error';
 
 @Controller('auth')
 export class AuthController {
@@ -34,29 +30,48 @@ export class AuthController {
   @Throttle({ default: { ttl: 60000, limit: 5 } })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: any) {
-    await new Promise((resolve, reject) => {
-      req.login(req.user, (err) => {
-        if (err) {
-          return reject(err);
+  async login(@Req() req: Request) {
+    const user = req.user;
+    if (!user) {
+      throw new Error('Authenticated user is missing after login.');
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      req.login(user, (error: unknown) => {
+        if (error) {
+          reject(toError(error, 'Login failed.'));
+          return;
         }
-        resolve(true);
+
+        resolve();
       });
     });
 
-    return { message: 'Login successful', user: req.user };
+    return { message: 'Login successful', user };
   }
 
   @SkipThrottle()
   @Post('logout')
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     await new Promise<void>((resolve, reject) => {
-      req.logout((err: any) => (err ? reject(err) : resolve()));
+      req.logout((error: unknown) => {
+        if (error) {
+          reject(toError(error, 'Logout failed.'));
+          return;
+        }
+
+        resolve();
+      });
     });
 
     await new Promise<void>((resolve, reject) => {
-      req.session.destroy((err: any) => {
-        err ? reject(err) : resolve();
+      req.session.destroy((error: unknown) => {
+        if (error) {
+          reject(toError(error, 'Failed to destroy the session.'));
+          return;
+        }
+
+        resolve();
       });
     });
 
@@ -75,7 +90,7 @@ export class AuthController {
     };
   }
   @Post('send-email')
-  async sendEmail(@Body() { email }) {
+  async sendEmail(@Body() { email }: SendEmailDto) {
     await this.authService.sendEmail(email);
   }
 }

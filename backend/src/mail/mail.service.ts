@@ -20,10 +20,10 @@ export class MailService {
   constructor(private readonly prisma: PrismaService) {}
 
   private readonly resend = new Resend(process.env.RESEND_API_KEY);
-  private readonly welcomeMailHtml = (username) => {
+  private readonly welcomeMailHtml = (username: string) => {
     return `<h1>Welcome to Forum Service ${username}</h1> <br/> <a href="forum-app-production.up.railway.app">Visit Service </a>`;
   };
-  private readonly verificationCodeHtml = (code) => {
+  private readonly verificationCodeHtml = (code: string) => {
     return `<h1>Verification Code</h1> 
         <br/>
         <strong>${code}</strong> 
@@ -47,7 +47,13 @@ export class MailService {
     }
   }
 
-  async sendVerificationCode({ userId, email }) {
+  async sendVerificationCode({
+    userId,
+    email,
+  }: {
+    userId: number;
+    email: string;
+  }) {
     const existing = await this.prisma.verificationCode.findUnique({
       where: { userId_type: { userId: userId, type: 'EMAIL_VERIFY' } },
     });
@@ -85,7 +91,7 @@ export class MailService {
       },
     });
 
-    const { data, error } = await this.resend.emails.send({
+    const { error } = await this.resend.emails.send({
       from: 'noreply@minsokforum.xyz',
       to: email,
       subject: 'Verifcation Code from Forum Service',

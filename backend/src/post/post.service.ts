@@ -126,7 +126,7 @@ export class PostService {
     return posts;
   }
 
-  async updatePost(id: number, updatepostdto: UpdatePostDto, userId: any) {
+  async updatePost(id: number, updatepostdto: UpdatePostDto, userId: number) {
     const post = await this.prisma.post.findUnique({
       where: {
         id: id,
@@ -148,7 +148,7 @@ export class PostService {
     return { msg: 'success' };
   }
 
-  async deletePost(id, userId) {
+  async deletePost(id: number, userId: number) {
     const post = await this.prisma.post.findUnique({
       where: {
         id: id,
@@ -160,7 +160,7 @@ export class PostService {
     }
 
     // Have to delete all the item related with this post.
-    const result = await this.prisma.$transaction([
+    await this.prisma.$transaction([
       this.prisma.comment.deleteMany({ where: { postId: id } }),
       this.prisma.post_Like.deleteMany({ where: { postId: id } }),
       this.prisma.post.delete({ where: { id } }),
