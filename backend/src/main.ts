@@ -9,7 +9,7 @@ import { createClient } from 'redis';
 import { RedisStore } from 'connect-redis';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ResponseInterceptor } from './common/response.interceptor';
-import { HttpExceptionFilter } from './common/http-exception.interceptor';
+import { HttpExceptionFilter } from './common/http-exception.filter';
 
 export async function setUpSession(app: NestExpressApplication) {
   const configService = app.get<ConfigService>(ConfigService);
