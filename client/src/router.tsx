@@ -10,7 +10,6 @@ import CheckVerificationCodePage from './components/auth/CheckVerificationCodePa
 import ProfilePage from './components/user/ProfilePage';
 import ErrorTestPage from './components/error/ErrorTestPage';
 import RouteErrorPage from './components/error/RouteErrorPage';
-import ChangePasswordPage from './components/auth/ChangePassword';
 
 const router = createBrowserRouter([
   {

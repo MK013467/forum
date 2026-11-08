@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '../../api';
+import { api, getApiErrorMessage } from '../../api';
 import { GoEye } from 'react-icons/go';
 import { GoEyeClosed } from 'react-icons/go';
 import { toast } from 'react-toastify';
@@ -17,10 +17,7 @@ const LoginFormSchema = z.object({
 type LoginForm = z.infer<typeof LoginFormSchema>;
 
 const LoginUserPage = () => {
-  const user = useAuthStore((state) => state.user);
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const login = useAuthStore((state) => state.login);
-  const logout = useAuthStore((state) => state.logout);
   const {
     register,
     handleSubmit,
@@ -45,11 +42,11 @@ const LoginUserPage = () => {
         hideProgressBar: true,
       });
       navigate('/');
-    } catch (error: any) {
+    } catch (error) {
       setError('root', {
         type: 'server',
         message:
-          error.response?.data?.message ||
+          getApiErrorMessage(error) ||
           'Invalid username or password does not match',
       });
       toast.error('Invalid username or password does not match', {

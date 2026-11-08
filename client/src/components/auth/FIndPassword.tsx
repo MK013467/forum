@@ -63,7 +63,7 @@ export default function FindPassword() {
     try {
       setVerifying(true);
 
-      const res = await api.post('/auth/password-reset/verify', {
+      await api.post('/auth/password-reset/verify', {
         email,
         code,
       });

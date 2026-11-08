@@ -30,7 +30,6 @@ const CreatePostPage = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors, isSubmitting, isValid },
   } = useForm<createPostForm>({
     resolver: zodResolver(createPostFormSchema),

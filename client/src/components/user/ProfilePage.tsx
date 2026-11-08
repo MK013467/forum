@@ -12,7 +12,7 @@ const ProfilePage = () => {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [, setDeleting] = useState(false);
   const queryClient = useQueryClient();
   if (!user) {
     navigate('/');

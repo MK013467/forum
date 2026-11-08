@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 import { api } from '../../api';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -88,7 +89,7 @@ const OnePostPage = () => {
       mode: 'onChange',
     });
 
-  const { register, handleSubmit, setError } = useForm<createCommentForm>({
+  const { register, handleSubmit } = useForm<createCommentForm>({
     resolver: zodResolver(createCommentFormSchema),
     mode: 'onChange',
   });
@@ -106,7 +107,7 @@ const OnePostPage = () => {
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
     },
 
-    onError: (err: any) => {
+    onError: (err) => {
       console.log(err);
     },
   });
@@ -128,8 +129,10 @@ const OnePostPage = () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       navigate('/post?page=1');
     },
-    onError: (err: any) => {
-      console.log(err.response?.data || err.message);
+    onError: (err) => {
+      console.log(
+        (axios.isAxiosError(err) && err.response?.data) || err.message,
+      );
     },
   });
 
@@ -160,7 +163,7 @@ const OnePostPage = () => {
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
     },
 
-    onError: (err, variable, context) => {
+    onError: (err, _variable, context) => {
       queryClient.setQueryData(['post', postId], context?.previousPost);
       console.log(err);
     },
@@ -192,7 +195,7 @@ const OnePostPage = () => {
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
     },
 
-    onError: (err, variable, context) => {
+    onError: (err, _variable, context) => {
       queryClient.setQueryData(['post', postId], context?.previousPost);
       console.log(err);
     },

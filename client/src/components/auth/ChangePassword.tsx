@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { GoEye, GoEyeClosed } from 'react-icons/go';
 import { toast } from 'react-toastify';
-import { api } from '../../api';
+import { api, getApiErrorMessage } from '../../api';
 
 const changePasswordSchema = z
   .object({
@@ -58,9 +58,8 @@ const ChangePasswordPage = () => {
       });
 
       reset();
-    } catch (err: any) {
-      const message =
-        err.response?.data?.message || 'Failed to change password';
+    } catch (err) {
+      const message = getApiErrorMessage(err) || 'Failed to change password';
 
       setError('root', {
         type: 'server',

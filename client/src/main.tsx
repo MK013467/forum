@@ -11,11 +11,12 @@ import {
 import { ErrorBoundary } from 'react-error-boundary';
 import RootErrorPage from './components/error/RootErrorPage.tsx';
 import { ToastContainer } from 'react-toastify';
+import { getApiErrorMessage } from './api';
 
 const quryClient = new QueryClient({
   mutationCache: new MutationCache({
-    onError: (error: any) => {
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+    onError: (error) => {
+      alert(`Error: ${getApiErrorMessage(error) || error.message}`);
     },
   }),
 });
