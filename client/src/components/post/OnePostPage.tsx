@@ -98,7 +98,6 @@ const OnePostPage = () => {
     mutationFn: async (data: createCommentForm) => {
       return await api.post('/comment', {
         ...data,
-        authorId: user?.id,
         postId: post?.id,
       });
     },
