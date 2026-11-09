@@ -1,6 +1,13 @@
-import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { LocalAuthGuard } from 'src/auth/passport/LocalAuthGuard';
+import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
 import { Request, Response } from 'express';
 import { toError } from 'src/common/error';
 
@@ -8,16 +15,15 @@ import { toError } from 'src/common/error';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @UseGuards(LocalAuthGuard)
-  @Get()
-  getUserProfile() {}
-
+  @UseGuards(AuthenticatedGuard)
   @Delete('me')
   async deleteUserByUsername(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const userId = req.user!.id;
+    // The guard already blocks logged-out users
+    if (!req.isAuthenticated()) throw new UnauthorizedException();
+    const userId = req.user.id;
     await this.userService.deleteUser(userId);
 
     // loging out

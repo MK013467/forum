@@ -97,18 +97,15 @@ export class UsersService {
   }
 
   // Delete
+  // No try/catch: a failed delete must reach the global filter. Swallowing it
+  // made the controller log the user out and answer 200 "account deleted".
   async deleteUser(userId: number) {
-    try {
-      const result = await this.prisma.$transaction([
-        this.prisma.comment_Like.deleteMany({ where: { userId: userId } }),
-        this.prisma.comment.deleteMany({ where: { authorId: userId } }),
-        this.prisma.post_Like.deleteMany({ where: { userId: userId } }),
-        this.prisma.post.deleteMany({ where: { authorId: userId } }),
-        this.prisma.user.delete({ where: { id: userId } }),
-      ]);
-      return result;
-    } catch (err) {
-      console.log(err);
-    }
+    return this.prisma.$transaction([
+      this.prisma.comment_Like.deleteMany({ where: { userId: userId } }),
+      this.prisma.comment.deleteMany({ where: { authorId: userId } }),
+      this.prisma.post_Like.deleteMany({ where: { userId: userId } }),
+      this.prisma.post.deleteMany({ where: { authorId: userId } }),
+      this.prisma.user.delete({ where: { id: userId } }),
+    ]);
   }
 }

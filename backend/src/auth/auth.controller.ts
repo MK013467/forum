@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { LocalAuthGuard } from './passport/LocalAuthGuard';
+import { AuthenticatedGuard } from './passport/AuthenticatedGuard';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
@@ -79,15 +80,10 @@ export class AuthController {
     return { message: 'user logged out.' };
   }
 
-  // @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('profile')
   getprofile(@Req() req: Request) {
-    return {
-      user: req.user ?? null,
-      isAuthenticated: req.isAuthenticated?.() ?? false,
-      sessionID: req.sessionID,
-      session: req.session,
-    };
+    return req.user;
   }
   @Post('send-email')
   async sendEmail(@Body() { email }: SendEmailDto) {
