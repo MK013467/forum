@@ -7,7 +7,6 @@ describe('CommentService', () => {
   let service: CommentService;
   const mockPrismaService = {
     comment: {
-      findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -49,9 +48,10 @@ describe('CommentService', () => {
     it('throws ForbiddenException when the user is not the author', async () => {
       mockPrismaService.comment.findUnique.mockResolvedValue(existingComment);
 
-      await expect(
-        service.updateComment(10, otherUserId, { content: 'new' }),
-      ).rejects.toThrow(ForbiddenException);
+      const result = service.updateComment(10, otherUserId, { content: 'new' });
+
+      await expect(result).rejects.toThrow(ForbiddenException);
+      await expect(result).rejects.toThrow('You cannot edit this comment');
       expect(mockPrismaService.comment.update).not.toHaveBeenCalled();
     });
 
@@ -105,11 +105,21 @@ describe('CommentService', () => {
   });
 
   describe('createComment', () => {
+    it('uses the given author id, not anything from the DTO', async () => {
+      mockPrismaService.comment.create.mockResolvedValue(existingComment);
+
+      await service.createComment(authorId, { postId: 5, content: 'hi' });
+
+      expect(mockPrismaService.comment.create).toHaveBeenCalledWith({
+        data: { content: 'hi', authorId, postId: 5 },
+      });
+    });
+
     it('propagates database errors instead of returning undefined', async () => {
       mockPrismaService.comment.create.mockRejectedValue(new Error('db down'));
 
       await expect(
-        service.createComment({ authorId, postId: 5, content: 'hi' }),
+        service.createComment(authorId, { postId: 5, content: 'hi' }),
       ).rejects.toThrow('db down');
     });
   });
