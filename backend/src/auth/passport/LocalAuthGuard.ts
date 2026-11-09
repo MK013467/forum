@@ -1,5 +1,6 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, ExecutionContext } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
@@ -7,7 +8,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
   //ExecutionContext inherits from ArgumentsHost.
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const result = (await super.canActivate(context)) as boolean;
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
     //store session
     await super.logIn(request);
     //result is type of boolean

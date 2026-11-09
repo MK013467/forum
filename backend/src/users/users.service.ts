@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/CreateUser.dto';
@@ -32,15 +32,6 @@ export class UsersService {
   async getAllUsers(): Promise<User[]> {
     const users = await this.prisma.user.findMany({});
     return users;
-  }
-
-  async findUser(field: any, value: any) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        [field]: value,
-      } as Prisma.UserWhereUniqueInput,
-    });
-    return user;
   }
 
   async findUserById(id: number) {

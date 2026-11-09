@@ -1,24 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { CreateUserDto } from './dtos/CreateUser.dto';
+import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserDto } from './dtos/User.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from 'src/auth/passport/LocalAuthGuard';
-import { PassThrough } from 'stream';
+import { Request, Response } from 'express';
+import { toError } from 'src/common/error';
+
 @Controller('user')
 export class UsersController {
   constructor(private userService: UsersService) {}
@@ -29,20 +14,24 @@ export class UsersController {
 
   @Delete('me')
   async deleteUserByUsername(
-    @Req() req: any,
-    @Res({ passthrough: true }) res: any,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
     const userId = req.user!.id;
     await this.userService.deleteUser(userId);
 
     // loging out
     await new Promise<void>((resolve, reject) => {
-      req.logout((err: any) => (err ? reject(err) : resolve()));
+      req.logout((err: unknown) => {
+        if (err) reject(toError(err, 'Logout failed.'));
+        else resolve();
+      });
     });
 
     await new Promise<void>((resolve, reject) => {
-      req.session.destroy((err: any) => {
-        err ? reject(err) : resolve();
+      req.session.destroy((err: unknown) => {
+        if (err) reject(toError(err, 'Failed to destroy the session.'));
+        else resolve();
       });
     });
 
