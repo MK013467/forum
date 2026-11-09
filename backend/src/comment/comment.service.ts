@@ -11,15 +11,11 @@ import { UpdateCommentDto } from './dtos/UpdateComment.dto';
 export class CommentService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllCommentsforPost() {
-    return await this.prisma.comment.findMany({});
-  }
-
-  async createComment(dto: CreateCommentdto) {
+  async createComment(authorId: number, dto: CreateCommentdto) {
     return await this.prisma.comment.create({
       data: {
         content: dto.content,
-        authorId: dto.authorId,
+        authorId,
         postId: dto.postId,
       },
     });
@@ -41,7 +37,7 @@ export class CommentService {
     }
 
     if (comment.authorId !== loggedInUserId) {
-      throw new ForbiddenException('You cannot delete this comment');
+      throw new ForbiddenException('You cannot edit this comment');
     }
 
     await this.prisma.comment.update({
