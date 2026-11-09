@@ -40,12 +40,25 @@ describe('UsersService', () => {
       await expect(service.deleteUser(1)).rejects.toThrow('FK violation');
     });
 
-    it('deletes the user inside one transaction', async () => {
+    it('runs every delete, user last, inside one transaction', async () => {
+      // Each delete returns a distinct marker so we can check that the exact
+      // operations, in this order, were handed to $transaction.
+      mockPrismaService.comment_Like.deleteMany.mockReturnValue('commentLikes');
+      mockPrismaService.comment.deleteMany.mockReturnValue('comments');
+      mockPrismaService.post_Like.deleteMany.mockReturnValue('postLikes');
+      mockPrismaService.post.deleteMany.mockReturnValue('posts');
+      mockPrismaService.user.delete.mockReturnValue('user');
       mockPrismaService.$transaction.mockResolvedValue([]);
 
       await service.deleteUser(1);
 
-      expect(mockPrismaService.$transaction).toHaveBeenCalledTimes(1);
+      expect(mockPrismaService.$transaction).toHaveBeenCalledWith([
+        'commentLikes',
+        'comments',
+        'postLikes',
+        'posts',
+        'user',
+      ]);
       expect(mockPrismaService.user.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
