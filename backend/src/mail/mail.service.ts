@@ -68,6 +68,12 @@ export class MailService {
     }
 
     const otp = generateOTP(6);
+    const { error } = await this.resend.emails.send({
+      from: 'noreply@minsokforum.xyz',
+      to: email,
+      subject: 'Verifcation Code from Forum Service',
+      html: this.verificationCodeHtml(otp),
+    });
 
     // use upsert becaus an user should not know the verification code is already sent or not
     await this.prisma.verificationCode.upsert({
@@ -91,13 +97,6 @@ export class MailService {
         expiresAt: new Date(Date.now() + 1000 * 60 * 5),
         requestNum: { increment: 1 },
       },
-    });
-
-    const { error } = await this.resend.emails.send({
-      from: 'noreply@minsokforum.xyz',
-      to: email,
-      subject: 'Verifcation Code from Forum Service',
-      html: this.verificationCodeHtml(otp),
     });
 
     if (error)
