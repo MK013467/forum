@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { ApiErrorResponse } from './api-response';
 
@@ -71,5 +72,23 @@ describe('HttpExceptionFilter', () => {
       }),
     );
     spy.mockRestore();
+  });
+
+  it.each([
+    ['P2002', 409, 'Resource already exists'],
+    ['P2025', 404, 'Resource not found'],
+  ])('maps Prisma %s to %i', (code, httpStatus, message) => {
+    filter.catch(
+      new Prisma.PrismaClientKnownRequestError('prisma error', {
+        code,
+        clientVersion: 'test',
+      }),
+      host,
+    );
+
+    expect(status).toHaveBeenCalledWith(httpStatus);
+    expect(json).toHaveBeenCalledWith(
+      expect.objectContaining({ statusCode: httpStatus, message }),
+    );
   });
 });

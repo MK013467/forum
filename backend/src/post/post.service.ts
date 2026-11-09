@@ -1,8 +1,10 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Postdto } from './dto/Post.dto';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
@@ -107,23 +109,25 @@ export class PostService {
   }
 
   async createPost(postdto: Postdto, id: number) {
-    const post = await this.prisma.post.findUnique({
-      where: {
-        title: postdto.title,
-      },
-    });
-
-    if (!post) throw new Error('Post Title is already taken!');
-
-    //createdAt is handled by prisma schema
-    const posts = this.prisma.post.create({
-      data: {
-        title: postdto.title,
-        content: postdto.content,
-        authorId: id,
-      },
-    });
-    return posts;
+    // No findUnique pre-check: two requests could both pass it.
+    // The unique index on title decides, and P2002 becomes a 409.
+    try {
+      return await this.prisma.post.create({
+        data: {
+          title: postdto.title,
+          content: postdto.content,
+          authorId: id,
+        },
+      });
+    } catch (err: unknown) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        throw new ConflictException('Post title is already taken');
+      }
+      throw err;
+    }
   }
 
   async updatePost(id: number, updatepostdto: UpdatePostDto, userId: number) {
@@ -132,7 +136,7 @@ export class PostService {
         id: id,
       },
     });
-    if (!post) throw new Error('post not found');
+    if (!post) throw new NotFoundException('Post not found');
 
     if (post.authorId !== userId) {
       throw new ForbiddenException('You cannot edit this post');
@@ -142,7 +146,11 @@ export class PostService {
       where: {
         id: id,
       },
-      data: updatepostdto,
+      // Map fields explicitly so nothing else from the body reaches the DB.
+      data: {
+        title: updatepostdto.title,
+        content: updatepostdto.content,
+      },
     });
 
     return { msg: 'success' };
@@ -154,9 +162,9 @@ export class PostService {
         id: id,
       },
     });
-    if (!post) throw new Error('post not found');
+    if (!post) throw new NotFoundException('Post not found');
     if (post.authorId !== userId) {
-      throw new ForbiddenException('You cannot edit this post');
+      throw new ForbiddenException('You cannot delete this post');
     }
 
     // Have to delete all the item related with this post.

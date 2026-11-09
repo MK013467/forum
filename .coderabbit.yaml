@@ -1,0 +1,61 @@
+language: en-US
+
+tone_instructions: 'Be concise and technical. Prioritize actionable findings.'
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+  poem: false
+  request_changes_workflow: false
+
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+
+  path_filters:
+    - '!**/node_modules/**'
+    - '!**/dist/**'
+    - '!**/coverage/**'
+    - '!**/package-lock.json'
+    - '!**/generated/**'
+
+  path_instructions:
+    - path: 'backend/**'
+      instructions: |
+        Focus on:
+        - Authentication and authorization vulnerabilities.
+        - Incorrect HTTP status codes and exception handling.
+        - Synchronous problem for post likes and comment likes.
+        - Race conditions and transaction consistency.
+        - Missing input validation and error handling.
+        - Database query efficiency and N+1 problems.
+        - Tests for important business logic.
+
+    - path: 'client/**'
+      instructions: |
+        Focus on:
+        - React state management and rendering correctness.
+        - Incorrect useEffect dependencies and cleanup.
+        - Asynchronous race conditions.
+        - Missing loading and error states.
+        - Type safety and unsafe assumptions.
+
+    - path: '**/*.prisma'
+      instructions: |
+        Check schema correctness, relations, uniqueness
+        constraints, indexes, and migration compatibility.
+    - path: 'backend/prisma/migrations/**/migration.sql'
+      instructions: |
+        Flag DROP, cascades, and new unique constraints that can fail on existing data.
+        Flag any edit to an already committed migration.
+  tools:
+    eslint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    actionlint:
+      enabled: true
+
+chat:
+  auto_reply: true
