@@ -50,7 +50,9 @@ export async function setUpSession(app: NestExpressApplication) {
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.set('trust proxy', true);
+  // Trust only Railway's one proxy hop. `true` trusts every X-Forwarded-For
+  // entry, so a client could send a fake IP and dodge rate limits.
+  app.set('trust proxy', 1);
   await setUpSession(app);
   app.useGlobalPipes(
     new ValidationPipe({
