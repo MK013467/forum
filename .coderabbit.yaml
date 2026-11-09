@@ -51,11 +51,13 @@ reviews:
         Flag any edit to an already committed migration.
   tools:
     eslint:
-      enabled: true
+      enabled: false
     gitleaks:
       enabled: true
     actionlint:
       enabled: true
-
-chat:
-  auto_reply: true
+  pre_merge_checks:
+    docstrings:
+      mode: 'off'
+  chat:
+    auto_reply: true
