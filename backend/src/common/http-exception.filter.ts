@@ -5,8 +5,15 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { ApiErrorResponse } from './api-response';
+
+// Prisma errors that mean a client mistake, not a server fault.
+const PRISMA_ERRORS: Record<string, { status: number; message: string }> = {
+  P2002: { status: HttpStatus.CONFLICT, message: 'Resource already exists' },
+  P2025: { status: HttpStatus.NOT_FOUND, message: 'Resource not found' },
+};
 
 // Global filter: turns every thrown error into an ApiErrorResponse type.
 @Catch()
@@ -27,6 +34,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
           ? body
           : ((body as { message?: string | string[] }).message ??
             exception.message);
+    } else if (
+      exception instanceof Prisma.PrismaClientKnownRequestError &&
+      exception.code in PRISMA_ERRORS
+    ) {
+      ({ status, message } = PRISMA_ERRORS[exception.code]);
     } else {
       // Unknown error: do not leak details to the client
       status = HttpStatus.INTERNAL_SERVER_ERROR;
