@@ -28,12 +28,12 @@ describe('throttling', () => {
   // [name, controller, method (or null for a class-level limit), limit, ttl]
   it.each([
     ['login', AuthController, 'login', 5, MINUTE],
-    ['signup', AuthController, 'createUser', 5, HOUR],
+    ['signup', AuthController, 'createUser', 10, 15 * MINUTE],
     ['send-email', AuthController, 'sendEmail', 5, HOUR],
-    ['create post', PostController, 'createPost', 20, MINUTE],
-    ['update post', PostController, 'updatePost', 20, MINUTE],
-    ['comments', CommentController, null, 20, MINUTE],
-    ['likes', LikeController, null, 20, MINUTE],
+    ['create post', PostController, 'createPost', 5, MINUTE],
+    ['update post', PostController, 'updatePost', 5, MINUTE],
+    ['comments', CommentController, null, 10, MINUTE],
+    ['likes', LikeController, null, 30, MINUTE],
   ] as const)('limits %s', (_name, controller, method, limit, ttl) => {
     const target = method
       ? (controller.prototype as unknown as Record<string, object>)[method]

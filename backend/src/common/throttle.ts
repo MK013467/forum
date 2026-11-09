@@ -4,6 +4,8 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 
 export const LOGIN_THROTTLE = { default: { ttl: MINUTE, limit: 5 } };
-export const SIGNUP_THROTTLE = { default: { ttl: HOUR, limit: 5 } };
+export const SIGNUP_THROTTLE = { default: { ttl: 15 * MINUTE, limit: 10 } };
 export const SEND_EMAIL_THROTTLE = { default: { ttl: HOUR, limit: 5 } };
-export const WRITE_THROTTLE = { default: { ttl: MINUTE, limit: 20 } };
+export const POST_WRITE_THROTTLE = { default: { ttl: MINUTE, limit: 5 } };
+export const COMMENT_WRITE_THROTTLE = { default: { ttl: MINUTE, limit: 10 } };
+export const LIKE_THROTTLE = { default: { ttl: MINUTE, limit: 30 } };

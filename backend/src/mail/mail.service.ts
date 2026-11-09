@@ -8,6 +8,8 @@ import { Resend } from 'resend';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { generateOTP } from './otp';
 
+const RESEND_COOLDOWN_MS = 60_000;
+
 @Injectable()
 export class MailService {
   constructor(private readonly prisma: PrismaService) {}
@@ -50,6 +52,13 @@ export class MailService {
     const existing = await this.prisma.verificationCode.findUnique({
       where: { userId_type: { userId: userId, type: 'EMAIL_VERIFY' } },
     });
+
+    // One email per account per minute. Return quietly instead of 429, so the
+    // response looks the same as for an email with no account.
+    const lastSentAt = existing?.updatesAt ?? existing?.createsAt;
+    if (lastSentAt && Date.now() - lastSentAt.getTime() < RESEND_COOLDOWN_MS) {
+      return;
+    }
 
     if (existing && existing.requestNum >= 5) {
       throw new HttpException(

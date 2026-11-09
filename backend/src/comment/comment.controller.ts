@@ -16,9 +16,9 @@ import { UpdateCommentDto } from './dtos/UpdateComment.dto';
 import { Request } from 'express';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
 import { Throttle } from '@nestjs/throttler';
-import { WRITE_THROTTLE } from 'src/common/throttle';
+import { COMMENT_WRITE_THROTTLE } from 'src/common/throttle';
 
-@Throttle(WRITE_THROTTLE)
+@Throttle(COMMENT_WRITE_THROTTLE)
 @Controller('comment')
 export class CommentController {
   constructor(private comemntService: CommentService) {}
