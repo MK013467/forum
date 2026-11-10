@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as session from 'express-session';
 import * as passport from 'passport';
@@ -11,15 +11,16 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ResponseInterceptor } from './common/response.interceptor';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 
+const logger = new Logger('Bootstrap');
+
 export async function setUpSession(app: NestExpressApplication) {
   const configService = app.get<ConfigService>(ConfigService);
-
   const redisClient = createClient({
     url: configService.get('REDIS_URL'),
   });
 
-  redisClient.on('error', (err) => {
-    console.error('Redis Client Error', err);
+  redisClient.on('error', (err: Error) => {
+    logger.error('Redis Client Error', err.stack);
   });
 
   await redisClient.connect();
@@ -79,6 +80,6 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap().catch((err: unknown) => {
-  console.error(err);
+  logger.error(err instanceof Error ? err.stack : String(err));
   process.exit(1);
 });

@@ -42,8 +42,6 @@ export class AuthService {
     await this.userService.createUser(dto);
     // send Welcome Email
     await this.mailService.sendWelcomeMail(dto.email, dto.username);
-
-    return { msg: 'success' };
   }
 
   async findById(id: number) {

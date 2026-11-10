@@ -3,6 +3,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { Resend } from 'resend';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -25,7 +26,7 @@ export class MailService {
         <br/>
         Enter this verification code to complete your sign-in. This expires in 5 minutes.`;
   };
-
+  private readonly logger = new Logger(MailService.name);
   async sendWelcomeMail(userEmail: string, username: string) {
     const { data, error } = await this.resend.emails.send({
       from: 'noreply@minsokforum.xyz',
@@ -35,11 +36,10 @@ export class MailService {
     });
 
     if (error) {
-      console.log(error);
-    } else {
-      console.log(data);
-      return data;
+      this.logger.warn(`Welcome mail failed for ${username}: ${error.message}`);
+      return;
     }
+    return data;
   }
 
   async sendVerificationCode({
@@ -101,7 +101,5 @@ export class MailService {
 
     if (error)
       throw new InternalServerErrorException('Fail to Send verification Email');
-
-    return { msg: 'success' };
   }
 }

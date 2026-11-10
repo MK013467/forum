@@ -57,8 +57,8 @@ describe('PostService', () => {
       });
       mockPrismaService.$transaction.mockResolvedValue([]);
 
-      const result = await postService.deletePost(1, 1);
-      expect(result).toEqual({ msg: 'success' });
+      await expect(postService.deletePost(1, 1)).resolves.toBeUndefined();
+      expect(mockPrismaService.$transaction).toHaveBeenCalledTimes(1);
     });
 
     it('delete post throwing error for non existing postId', async () => {

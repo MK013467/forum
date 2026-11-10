@@ -37,12 +37,14 @@ describe('AuthService', () => {
       mockUserService.findUserByEmail.mockResolvedValue(null);
       mockUserService.createUser.mockResolvedValue({ id: 1 });
       mockMailService.sendWelcomeMail.mockResolvedValue(true);
-      const result = await authService.signup({
-        username: 'user1',
-        email: 'user1@gmail.com',
-        password: 'abcd!234',
-      });
-      expect(result).toEqual({ msg: 'success' });
+      await expect(
+        authService.signup({
+          username: 'user1',
+          email: 'user1@gmail.com',
+          password: 'abcd!234',
+        }),
+      ).resolves.toBeUndefined();
+      expect(mockUserService.createUser).toHaveBeenCalledTimes(1);
     });
 
     it('sign up throws error for existing username', async () => {

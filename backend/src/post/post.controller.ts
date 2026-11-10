@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { PostService } from './post.service';
-import { Postdto } from './dto/Post.dto';
+import { CreatePostDto } from './dto/Post.dto';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { GetPostDto } from './dto/GetPost.dto';
@@ -40,7 +40,7 @@ export class PostController {
   @Throttle(POST_WRITE_THROTTLE)
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createPost(@Body() postdto: Postdto, @Req() req: Request) {
+  async createPost(@Body() postdto: CreatePostDto, @Req() req: Request) {
     if (!req.isAuthenticated()) throw new UnauthorizedException();
 
     const post = await this.postService.createPost(postdto, req.user.id);

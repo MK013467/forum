@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
-import { CreateCommentdto } from './dtos/CreateComment.dto';
+import { CreateCommentDto } from './dtos/CreateComment.dto';
 import { UpdateCommentDto } from './dtos/UpdateComment.dto';
 import { Request } from 'express';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
@@ -21,14 +21,14 @@ import { COMMENT_WRITE_THROTTLE } from 'src/common/throttle';
 @Throttle(COMMENT_WRITE_THROTTLE)
 @Controller('comment')
 export class CommentController {
-  constructor(private comemntService: CommentService) {}
+  constructor(private commentService: CommentService) {}
 
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createComment(@Body() dto: CreateCommentdto, @Req() req: Request) {
+  async createComment(@Body() dto: CreateCommentDto, @Req() req: Request) {
     // The guard already blocks logged-out users; this narrows req.user for TS.
     if (!req.isAuthenticated()) throw new UnauthorizedException();
-    return this.comemntService.createComment(req.user.id, dto);
+    return this.commentService.createComment(req.user.id, dto);
   }
 
   @UseGuards(AuthenticatedGuard)
@@ -39,7 +39,7 @@ export class CommentController {
     @Body() dto: UpdateCommentDto,
   ) {
     if (!req.isAuthenticated()) throw new UnauthorizedException();
-    return this.comemntService.updateComment(commentId, req.user.id, dto);
+    return this.commentService.updateComment(commentId, req.user.id, dto);
   }
 
   @UseGuards(AuthenticatedGuard)
@@ -49,6 +49,6 @@ export class CommentController {
     @Req() req: Request,
   ) {
     if (!req.isAuthenticated()) throw new UnauthorizedException();
-    return this.comemntService.deleteComment(commentId, req.user.id);
+    return this.commentService.deleteComment(commentId, req.user.id);
   }
 }
