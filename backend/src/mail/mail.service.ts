@@ -8,6 +8,8 @@ import { Resend } from 'resend';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { generateOTP } from './otp';
 
+const RESEND_COOLDOWN_MS = 60_000;
+
 @Injectable()
 export class MailService {
   constructor(private readonly prisma: PrismaService) {}
@@ -51,6 +53,13 @@ export class MailService {
       where: { userId_type: { userId: userId, type: 'EMAIL_VERIFY' } },
     });
 
+    // One email per account per minute. Return quietly instead of 429, so the
+    // response looks the same as for an email with no account.
+    const lastSentAt = existing?.updatesAt ?? existing?.createsAt;
+    if (lastSentAt && Date.now() - lastSentAt.getTime() < RESEND_COOLDOWN_MS) {
+      return;
+    }
+
     if (existing && existing.requestNum >= 5) {
       throw new HttpException(
         'You have requsted more than 5times',
@@ -59,6 +68,12 @@ export class MailService {
     }
 
     const otp = generateOTP(6);
+    const { error } = await this.resend.emails.send({
+      from: 'noreply@minsokforum.xyz',
+      to: email,
+      subject: 'Verifcation Code from Forum Service',
+      html: this.verificationCodeHtml(otp),
+    });
 
     // use upsert becaus an user should not know the verification code is already sent or not
     await this.prisma.verificationCode.upsert({
@@ -82,13 +97,6 @@ export class MailService {
         expiresAt: new Date(Date.now() + 1000 * 60 * 5),
         requestNum: { increment: 1 },
       },
-    });
-
-    const { error } = await this.resend.emails.send({
-      from: 'noreply@minsokforum.xyz',
-      to: email,
-      subject: 'Verifcation Code from Forum Service',
-      html: this.verificationCodeHtml(otp),
     });
 
     if (error)

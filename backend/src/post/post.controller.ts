@@ -18,6 +18,8 @@ import { Postdto } from './dto/Post.dto';
 import { AuthenticatedGuard } from 'src/auth/passport/AuthenticatedGuard';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { GetPostDto } from './dto/GetPost.dto';
+import { Throttle } from '@nestjs/throttler';
+import { POST_WRITE_THROTTLE } from 'src/common/throttle';
 
 @Controller('post')
 export class PostController {
@@ -35,6 +37,7 @@ export class PostController {
     return post;
   }
 
+  @Throttle(POST_WRITE_THROTTLE)
   @UseGuards(AuthenticatedGuard)
   @Post()
   async createPost(@Body() postdto: Postdto, @Req() req: Request) {
@@ -44,6 +47,7 @@ export class PostController {
     return post;
   }
 
+  @Throttle(POST_WRITE_THROTTLE)
   @UseGuards(AuthenticatedGuard)
   @Patch(':id')
   async updatePost(

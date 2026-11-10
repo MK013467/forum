@@ -16,19 +16,24 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { SendEmailDto } from './dto/sendEmail.dto';
 import { toError } from 'src/common/error';
+import {
+  LOGIN_THROTTLE,
+  SEND_EMAIL_THROTTLE,
+  SIGNUP_THROTTLE,
+} from 'src/common/throttle';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Throttle(SIGNUP_THROTTLE)
   @Post('/signup')
   async createUser(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
     const user = await this.authService.signup(createUserDto);
     return user;
   }
 
-  // 5 login attempts per minute
-  @Throttle({ default: { ttl: 60000, limit: 5 } })
+  @Throttle(LOGIN_THROTTLE)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: Request) {
@@ -85,6 +90,7 @@ export class AuthController {
   getprofile(@Req() req: Request) {
     return req.user;
   }
+  @Throttle(SEND_EMAIL_THROTTLE)
   @Post('send-email')
   async sendEmail(@Body() { email }: SendEmailDto) {
     await this.authService.sendEmail(email);

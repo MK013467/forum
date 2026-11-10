@@ -8,7 +8,10 @@ import {
 import { LikeService } from './like.service';
 import { UpdateLikeDto } from './dto/UpdateLike.dto';
 import { Request } from 'express';
+import { Throttle } from '@nestjs/throttler';
+import { LIKE_THROTTLE } from 'src/common/throttle';
 
+@Throttle(LIKE_THROTTLE)
 @Controller('like')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
