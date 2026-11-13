@@ -4,14 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateCommentdto } from './dtos/CreateComment.dto';
+import { CreateCommentDto } from './dtos/CreateComment.dto';
 import { UpdateCommentDto } from './dtos/UpdateComment.dto';
 
 @Injectable()
 export class CommentService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createComment(authorId: number, dto: CreateCommentdto) {
+  async createComment(authorId: number, dto: CreateCommentDto) {
     return await this.prisma.comment.create({
       data: {
         content: dto.content,

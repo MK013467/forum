@@ -29,8 +29,7 @@ export class AuthController {
   @Throttle(SIGNUP_THROTTLE)
   @Post('/signup')
   async createUser(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
-    const user = await this.authService.signup(createUserDto);
-    return user;
+    await this.authService.signup(createUserDto);
   }
 
   @Throttle(LOGIN_THROTTLE)

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Postdto } from './dto/Post.dto';
+import { CreatePostDto } from './dto/Post.dto';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { GetPostDto } from './dto/GetPost.dto';
 
@@ -108,7 +108,7 @@ export class PostService {
     };
   }
 
-  async createPost(postdto: Postdto, id: number) {
+  async createPost(postdto: CreatePostDto, id: number) {
     // No findUnique pre-check: two requests could both pass it.
     // The unique index on title decides, and P2002 becomes a 409.
     try {
@@ -142,7 +142,7 @@ export class PostService {
       throw new ForbiddenException('You cannot edit this post');
     }
 
-    await this.prisma.post.update({
+    return this.prisma.post.update({
       where: {
         id: id,
       },
@@ -152,8 +152,6 @@ export class PostService {
         content: updatepostdto.content,
       },
     });
-
-    return { msg: 'success' };
   }
 
   async deletePost(id: number, userId: number) {
@@ -173,23 +171,5 @@ export class PostService {
       this.prisma.post_Like.deleteMany({ where: { postId: id } }),
       this.prisma.post.delete({ where: { id } }),
     ]);
-
-    return { msg: 'success' };
-  }
-
-  async handlePostlike(userId: number, postId: number) {
-    const post = await this.prisma.post.findUnique({
-      where: { id: postId },
-    });
-    if (!post) throw new NotFoundException('Post not found');
-    await this.prisma.post.update({
-      where: {
-        id: post.id,
-      },
-      data: {
-        likes: { increment: 1 },
-      },
-    });
-    return { msg: 'success' };
   }
 }
