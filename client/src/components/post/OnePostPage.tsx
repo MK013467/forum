@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
 import { api } from '../../api';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -105,10 +104,6 @@ const OnePostPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
     },
-
-    onError: (err) => {
-      console.log(err);
-    },
   });
   const updatePostMutation = useMutation({
     mutationFn: async (data: updatePostForm) => {
@@ -127,11 +122,6 @@ const OnePostPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       navigate('/post?page=1');
-    },
-    onError: (err) => {
-      console.log(
-        (axios.isAxiosError(err) && err.response?.data) || err.message,
-      );
     },
   });
 
@@ -162,9 +152,8 @@ const OnePostPage = () => {
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
     },
 
-    onError: (err, _variable, context) => {
+    onError: (_err, _variable, context) => {
       queryClient.setQueryData(['post', postId], context?.previousPost);
-      console.log(err);
     },
   });
 
@@ -194,9 +183,8 @@ const OnePostPage = () => {
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
     },
 
-    onError: (err, _variable, context) => {
+    onError: (_err, _variable, context) => {
       queryClient.setQueryData(['post', postId], context?.previousPost);
-      console.log(err);
     },
 
     onSettled: () => {},

@@ -10,13 +10,13 @@ import {
 } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import RootErrorPage from './components/error/RootErrorPage.tsx';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { getApiErrorMessage } from './api';
 
 const quryClient = new QueryClient({
   mutationCache: new MutationCache({
     onError: (error) => {
-      alert(`Error: ${getApiErrorMessage(error) || error.message}`);
+      toast.error(getApiErrorMessage(error) || error.message);
     },
   }),
 });

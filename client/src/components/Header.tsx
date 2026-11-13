@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FaUserLarge } from 'react-icons/fa6';
-import { api, getApiErrorMessage } from '../api';
+import { api } from '../api';
 import { useAuthStore } from 'src/store/useAuthStore';
 
 const Headers = () => {
@@ -10,13 +10,12 @@ const Headers = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    // Log out locally even if the server call fails
     try {
       await api.post('/auth/logout');
-      navigate('/');
-    } catch (err) {
-      console.log(getApiErrorMessage(err));
     } finally {
       logout();
+      navigate('/');
     }
   };
 

@@ -1,4 +1,4 @@
-import { api } from '../../api';
+import { api, getApiErrorMessage } from '../../api';
 import { FaUserLarge } from 'react-icons/fa6';
 import { MdLogout } from 'react-icons/md';
 import { PiSignOutDuotone } from 'react-icons/pi';
@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from 'src/store/useAuthStore';
+import { toast } from 'react-toastify';
 const ProfilePage = () => {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -28,7 +29,7 @@ const ProfilePage = () => {
       queryClient.removeQueries({ queryKey: ['posts'] });
       navigate('/');
     } catch (err) {
-      console.log(err);
+      toast.error(getApiErrorMessage(err) ?? 'DeleteAccount failed');
     } finally {
       setDeleting(false);
       setShowDeleteModal(false);

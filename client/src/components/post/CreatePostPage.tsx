@@ -46,10 +46,6 @@ const CreatePostPage = () => {
       await queryClient.invalidateQueries({ queryKey: ['posts'] });
       navigate('/');
     },
-
-    onError: (error) => {
-      console.log(error.message);
-    },
   });
 
   const onSubmit: SubmitHandler<createPostForm> = async (data) => {

@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
-import { api } from '../../api';
+import { api, getApiErrorMessage } from '../../api';
 import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { GoEye, GoEyeClosed } from 'react-icons/go';
@@ -44,19 +43,15 @@ const SignUpUser = () => {
 
   const onSubmit: SubmitHandler<userForm> = async (data) => {
     try {
-      const response = await api.post('/auth/signup', data);
-      console.log('Success:' + response.data);
+      await api.post('/auth/signup', data);
       toast.success('SignUp Successfully!', {
         position: 'bottom-center',
         autoClose: 2000,
         hideProgressBar: true,
       });
-
-      setTimeout(() => {
-        navigate('/');
-      }, 500);
+      navigate('/');
     } catch (error) {
-      console.error(axios.isAxiosError(error) ? error.response?.data : error);
+      toast.error(getApiErrorMessage(error) ?? 'Sign up failed');
     }
   };
 
